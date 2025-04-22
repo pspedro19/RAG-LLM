@@ -1,0 +1,92 @@
+version: '3.8'
+
+services:
+  postgres:
+    build:
+      context: ./postgres
+      dockerfile: Dockerfile
+    container_name: postgres_pgvector
+    restart: always
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: mydatabase
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      #- ./app/core/data/database/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./app2/core/db/init/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+
+  fastapi:
+    build: 
+      context: ./app
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - ./app:/app
+      - ${PWD}/chat-Interface:/app/chat-Interface
+      - ${PWD}/chat-Interface/property_images:/app/images
+    container_name: fastapi_server
+    # depends_on:
+    #   mlflow:
+    #     condition: service_healthy
+    #   mongodb:
+    #     condition: service_healthy
+    ports:
+      - "8000:8000"
+    networks:
+      - backend
+      - frontend
+    environment:
+      # - MLFLOW_TRACKING_URI=http://mlflow:5000
+      # - HUGGINGFACE_TOKEN=${HUGGINGFACE_TOKEN}
+      # - DB_NAME=${PG_DATABASE:-airflow}
+      # - DB_USER=${PG_USER:-airflow}
+      # - DB_PASSWORD=${PG_PASSWORD:-airflow}
+      # - DB_PORT=${PG_PORT:-5432}
+      # - MINIO_URL=minio:9000
+      # - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY:-minio}
+      # - MINIO_SECRET_KEY=${MINIO_SECRET_ACCESS_KEY:-minio123}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - MEDIA_DIR=/app/images
+      - DB_PATH=/app/chat-Interface/db.sqlite3
+      # - DJANGO_URL=http://django:8800
+      # - MONGO_URI=mongodb://${MONGO_ROOT_USER:-admin}:${MONGO_ROOT_PASSWORD:-adminpassword}@mongodb:27017/${MONGO_DATABASE:-mydatabase}?authSource=admin
+    command: >
+      bash -c "
+        ln -sf /app /app/app &&
+        uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+      "
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  backend:
+    driver: bridge
+  frontend:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  pgadmin_data:
+
+  

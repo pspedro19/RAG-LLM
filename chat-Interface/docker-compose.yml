@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             gunicorn chatbot.wsgi:application --bind 0.0.0.0:8000"
+    volumes:
+      - .:/app
+      - ./property_images:/app/property_images:rw
+      - static_volume:/app/staticfiles:rw
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=0 # Establece esto a 0 en producción
+
+  fastapi:
+    build:
+      context: ..
+      dockerfile: ./app/Dockerfile
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8800 --reload
+    volumes:
+      - ..:/app # Ajusta el volumen para incluir 'app' y 'main.py' fuera de 'chat-interface'
+      - ../chat-Interface/property_images:/app/images  # Montar el directorio de imágenes
+      - ./db.sqlite3:/app/chat-Interface/db.sqlite3
+    ports:
+      - "8800:8800"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - DB_PATH=/app/chat-Interface/db.sqlite3
+      - MEDIA_DIR=/app/images
+
+  https-portal:
+    image: steveltn/https-portal:1
+    container_name: https-portal
+    ports:
+      - '80:80'
+      - '443:443'
+    environment:
+      DOMAINS: 'dnlproptech-chat.com -> http://web:8000, api.dnlproptech-chat.com -> http://fastapi:8800'
+      STAGE: 'production' # Cambiar a production cuando esté listo
+      # Forzar HTTP upstream
+      FORCE_HTTPS_UPSTREAM: 'false'
+      SSL_UPSTREAM: 'false'
+      WEBSOCKET: 'true'
+      KEEPALIVE_TIMEOUT: '60'
+      CLIENT_MAX_BODY_SIZE: 10M
+      CUSTOM_NGINX_SERVER_CONFIG: |
+        # Configuración mejorada para servir estáticos
+        location /static/ {
+          alias /var/www/vhosts/staticfiles/;
+          add_header Access-Control-Allow-Origin *;
+          add_header Cache-Control "public, no-transform";
+          expires 30d;
+          access_log off;
+          try_files $uri $uri/ =404;
+        }
+    volumes:
+      - https-portal-data:/var/lib/https-portal
+      - /data/https-portal/vhosts:/var/www/vhosts
+      - ./nginx-conf:/etc/nginx/conf.d
+      - static_volume:/var/www/vhosts/staticfiles:ro
+    depends_on:
+      - web
+      - fastapi
+
+volumes:
+  https-portal-data:
+  static_volume:

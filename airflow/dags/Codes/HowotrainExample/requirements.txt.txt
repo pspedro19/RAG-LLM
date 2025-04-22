@@ -1,0 +1,16 @@
+apache-airflow==2.8.1
+psycopg2-binary==2.9.3
+pendulum==2.1.2
+# Otras dependencias que tus DAGs podr  an requerir, como bibliotecas para manejar datos, ML, etc.
+pandas==1.4.2
+numpy==1.22.3
+scikit-learn==1.0.2
+mlflow[extras]~=2.10
+boto3~=1.34
+transformers
+peft
+trl
+datasets
+torch
+wandb
+huggingface_hub

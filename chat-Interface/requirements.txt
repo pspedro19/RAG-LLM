@@ -1,0 +1,16 @@
+Django>=3.0,<4.0
+djangorestframework
+gunicorn>=20.0
+requests  
+fastapi
+uvicorn
+openai==0.28
+python-dotenv
+psycopg2-binary
+torch
+pydantic
+transformers
+scikit-learn
+django-import-export
+Pillow
+beautifulsoup4

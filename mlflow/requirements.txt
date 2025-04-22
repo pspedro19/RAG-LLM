@@ -1,0 +1,3 @@
+wandb
+apache-airflow==2.3.0  # Adjust the version based on your specific installation
+

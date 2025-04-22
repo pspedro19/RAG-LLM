@@ -1,0 +1,330 @@
+version: '3.8'
+
+x-airflow-common: &airflow-common
+  build: './airflow'
+  image: ${AIRFLOW_IMAGE_NAME:-extending_airflow:latest}
+  environment: &airflow-common-env
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${PG_USER:-airflow}:${PG_PASSWORD:-airflow}@postgres:5432/${PG_DATABASE:-airflow}
+    AIRFLOW__CORE__FERNET_KEY: ''
+    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
+    AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+    AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.session'
+    AIRFLOW__CORE__TEST_CONNECTION: 'Enabled'
+    AIRFLOW__WEBSERVER__EXPOSE_CONFIG: 'True'
+    AIRFLOW__SECRETS__BACKEND: airflow.secrets.local_filesystem.LocalFilesystemBackend
+    AIRFLOW__SECRETS__BACKEND_KWARGS: '{"variables_file_path": "/opt/secrets/variables.yaml", "connections_file_path": "/opt/secrets/connections.yaml"}'
+    AWS_ACCESS_KEY_ID: ${MINIO_ACCESS_KEY:-minio}
+    AWS_SECRET_ACCESS_KEY: ${MINIO_SECRET_ACCESS_KEY:-minio123}
+    AWS_ENDPOINT_URL_S3: http://minio:9000
+    MLFLOW_S3_ENDPOINT_URL: http://minio:9000
+    HF_TOKEN: ${HUGGINGFACE_TOKEN}
+    WANDB_TOKEN: ${WANDB_API_KEY}
+  volumes:
+    - ${AIRFLOW_PROJ_DIR:-./airflow}/dags:/opt/airflow/dags
+    - ${AIRFLOW_PROJ_DIR:-./airflow}/logs:/opt/airflow/logs
+    - ${AIRFLOW_PROJ_DIR:-./airflow}/plugins:/opt/airflow/plugins
+    - ${AIRFLOW_PROJ_DIR:-./airflow}/secrets:/opt/secrets
+  networks:
+    - backend
+  user: "${AIRFLOW_UID:-50000}:${AIRFLOW_GID:-0}"
+  depends_on:
+    postgres:
+      condition: service_healthy
+    minio:
+      condition: service_healthy
+
+services:
+  postgres:
+    image: postgres:13
+    container_name: postgres_airflow
+    restart: always
+    environment:
+      POSTGRES_USER: ${PG_USER:-airflow}
+      POSTGRES_PASSWORD: ${PG_PASSWORD:-airflow}
+      POSTGRES_DB: ${PG_DATABASE:-airflow}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U airflow"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    ports:
+      - "${PG_PORT:-5432}:5432"
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-adminpassword}
+      MONGO_INITDB_DATABASE: ${MONGO_DATABASE:-mydatabase}
+    ports:
+      - "${MONGO_PORT:-27017}:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - backend
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  minio:
+    restart: always
+    image: minio/minio:latest
+    container_name: minio
+    ports:
+      - "${MINIO_PORT:-9000}:9000"
+      - "${MINIO_PORT_UI:-9001}:9001"
+    networks:
+      - frontend
+      - backend
+    environment:
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY:-minio}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_ACCESS_KEY:-minio123}
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address :9001
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 60s
+      timeout: 20s
+      retries: 3
+
+  create_s3_buckets:
+    image: minio/mc:latest
+    container_name: minio_create_bucket
+    depends_on:
+      minio:
+        condition: service_healthy
+    networks:
+      - backend
+    entrypoint: >
+      /bin/sh -c '
+      sleep 5;
+      /usr/bin/mc config host add s3 http://minio:9000 ${MINIO_ACCESS_KEY:-minio} ${MINIO_SECRET_ACCESS_KEY:-minio123} --api S3v4;
+      [[ ! -z "`/usr/bin/mc ls s3 | grep challenge`" ]] || /usr/bin/mc mb s3/${MLFLOW_BUCKET_NAME:-mlflow};
+      /usr/bin/mc policy download s3/${MLFLOW_BUCKET_NAME:-mlflow};
+      [[ ! -z "`/usr/bin/mc ls s3 | grep challenge`" ]] || /usr/bin/mc mb s3/${DATA_REPO_BUCKET_NAME:-data};
+      /usr/bin/mc policy download s3/${DATA_REPO_BUCKET_NAME:-data};
+      exit 0;
+      '
+
+  mlflow:
+    build: ./mlflow
+    container_name: mlflow_tracking
+    restart: always
+    ports:
+      - "${MLFLOW_PORT:-5000}:5000"
+    environment:
+      - MLFLOW_S3_ENDPOINT_URL=http://minio:9000
+      - AWS_ACCESS_KEY_ID=${MINIO_ACCESS_KEY:-minio}
+      - AWS_SECRET_ACCESS_KEY=${MINIO_SECRET_ACCESS_KEY:-minio123}
+      - MLFLOW_TRACKING_URI=http://localhost:5000
+      - MLFLOW_S3_IGNORE_TLS=true
+    command: >
+      bash -c "
+        ./init_db.sh &&
+        mlflow server 
+        --host 0.0.0.0 
+        --port 5000 
+        --default-artifact-root s3://${MLFLOW_BUCKET_NAME:-mlflow}/
+        --backend-store-uri postgresql://${PG_USER:-airflow}:${PG_PASSWORD:-airflow}@postgres:5432/${PG_DATABASE:-airflow}"
+    networks:
+      - backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  fastapi:
+    build: 
+      context: ./app
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - ./app:/app
+      - ${PWD}/chat-Interface:/app/chat-Interface
+      - ${PWD}/chat-Interface/property_images:/app/images
+    container_name: fastapi_server
+    depends_on:
+      mlflow:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    networks:
+      - backend
+      - frontend
+    environment:
+      # - MLFLOW_TRACKING_URI=http://mlflow:5000
+      # - HUGGINGFACE_TOKEN=${HUGGINGFACE_TOKEN}
+      # - DB_NAME=${PG_DATABASE:-airflow}
+      # - DB_USER=${PG_USER:-airflow}
+      # - DB_PASSWORD=${PG_PASSWORD:-airflow}
+      # - DB_PORT=${PG_PORT:-5432}
+      # - MINIO_URL=minio:9000
+      # - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY:-minio}
+      # - MINIO_SECRET_KEY=${MINIO_SECRET_ACCESS_KEY:-minio123}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - MEDIA_DIR=/app/images
+      - DB_PATH=/app/chat-Interface/db.sqlite3
+      # - DJANGO_URL=http://django:8800
+      # - MONGO_URI=mongodb://${MONGO_ROOT_USER:-admin}:${MONGO_ROOT_PASSWORD:-adminpassword}@mongodb:27017/${MONGO_DATABASE:-mydatabase}?authSource=admin
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  django:
+    build: 
+      context: ./chat-Interface
+      dockerfile: Dockerfile
+    container_name: django_chat_interface
+    restart: always
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             gunicorn chatbot.wsgi:application --bind 0.0.0.0:8800"
+    volumes:
+      - ./chat-Interface:/app
+      - ./chat-Interface/property_images:/app/property_images:rw
+      - static_volume:/app/staticfiles:rw
+    ports:
+      - "8800:8800"
+    environment:
+      - DEBUG=0
+      - DJANGO_SETTINGS_MODULE=chatbot.settings
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - DJANGO_SUPERUSER_USERNAME=${DJANGO_SUPERUSER_USERNAME:-admin}
+      - DJANGO_SUPERUSER_PASSWORD=${DJANGO_SUPERUSER_PASSWORD:-admin}
+      - DJANGO_SUPERUSER_EMAIL=${DJANGO_SUPERUSER_EMAIL:-admin@example.com}
+    networks:
+      - frontend
+    depends_on:
+      - fastapi
+
+  https-portal:
+    image: steveltn/https-portal:1
+    container_name: https-portal
+    ports:
+      - '80:80'
+      - '443:443'
+    restart: always
+    environment:
+      DOMAINS: 'dnlproptech-chat.com -> http://django:8800, api.dnlproptech-chat.com -> http://fastapi:8000'
+      STAGE: 'production'
+      FORCE_HTTPS_UPSTREAM: 'false'
+      SSL_UPSTREAM: 'false'
+      WEBSOCKET: 'true'
+      KEEPALIVE_TIMEOUT: '60'
+      CLIENT_MAX_BODY_SIZE: 10M
+      CUSTOM_NGINX_SERVER_CONFIG: |
+        location /static/ {
+          alias /var/www/vhosts/staticfiles/;
+          add_header Access-Control-Allow-Origin *;
+          add_header Cache-Control "public, no-transform";
+          expires 30d;
+          access_log off;
+          try_files $uri $uri/ =404;
+        }
+    volumes:
+      - https-portal-data:/var/lib/https-portal
+      - /data/https-portal/vhosts:/var/www/vhosts
+      - ./chat-Interface/nginx-conf:/etc/nginx/conf.d
+      - static_volume:/var/www/vhosts/staticfiles:ro
+    networks:
+      - frontend
+    depends_on:
+      - django
+      - fastapi
+
+  airflow-webserver:
+    <<: *airflow-common
+    container_name: airflow_webserver
+    command: webserver
+    ports:
+      - "${AIRFLOW_PORT:-8080}:8080"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
+      interval: 60s
+      timeout: 10s
+      retries: 5
+    restart: always
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+
+  airflow-scheduler:
+    <<: *airflow-common
+    container_name: airflow_scheduler
+    command: scheduler
+    healthcheck:
+      test: ["CMD-SHELL", 'airflow jobs check --job-type SchedulerJob --hostname "$${HOSTNAME}"']
+      interval: 60s
+      timeout: 10s
+      retries: 5
+    restart: always
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+
+  airflow-init:
+    <<: *airflow-common
+    container_name: airflow_init
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        mkdir -p /sources/logs /sources/dags /sources/plugins
+        chown -R "${AIRFLOW_UID:-50000}:${AIRFLOW_GID:-0}" /sources/{logs,dags,plugins}
+        exec /entrypoint airflow version
+        exec airflow db upgrade
+    environment:
+      <<: *airflow-common-env
+      _AIRFLOW_DB_MIGRATE: 'true'
+      _AIRFLOW_WWW_USER_CREATE: 'true'
+      _AIRFLOW_WWW_USER_USERNAME: ${_AIRFLOW_WWW_USER_USERNAME:-airflow}
+      _AIRFLOW_WWW_USER_PASSWORD: ${_AIRFLOW_WWW_USER_PASSWORD:-airflow}
+      _PIP_ADDITIONAL_REQUIREMENTS: ''
+    user: "0:0"
+    volumes:
+      - ${AIRFLOW_PROJ_DIR:-./airflow}:/sources
+
+networks:
+  backend:
+    driver: bridge
+  frontend:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  mongodb_data:
+    driver: local
+  minio_data:
+    driver: local
+  static_volume:
+    driver: local
+  https-portal-data:
+    driver: local
