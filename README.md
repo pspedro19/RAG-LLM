@@ -32,7 +32,7 @@ RAG-LLM/
 ### 1. Clonar el repositorio
 
 ```bash
-git clone https://github.com/tu-usuario/RAG-LLM.git
+git clone [https://github.com/tu-usuario/RAG-LLM.git](https://github.com/pspedro19/RAG-LLM.git)
 cd RAG-LLM
 ```
 
@@ -66,9 +66,9 @@ nano .env  # Editar con tus claves API
 Asegúrate de configurar las siguientes variables:
 
 ```
-OPENAI_API_KEY=tu_clave_api_de_openai
-EMBEDDINGS_MODEL=text-embedding-3-small
-CHAT_MODEL=gpt-4-turbo
+TAVILY_API_KEY=
+OPENAI_API_KEY=
+ANTHROPIC_API_KEY=
 ```
 
 ### 5. Preparar documentos
@@ -78,6 +78,23 @@ Asegúrate de que los documentos estén en los directorios correctos:
 ```
 app/data/documents/pdf/information/  # Para TP1 y TP2
 app/data/documents/pdf/tp3_agent/    # Para TP3
+```
+
+
+### 6. Montar Microservicio
+
+Asegúrate de que los documentos estén en los directorios correctos:
+
+```
+apt install docker-compose
+```
+
+```
+docker-compose build
+```
+
+```
+docker-compose up -d
 ```
 
 ## Implementación de los Trabajos Prácticos
