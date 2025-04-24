@@ -2,19 +2,14 @@
 # 🔐  Secret environment files
 #     ‒ Ignore every real .env but keep the template example.env
 # ───────────────────────────────────────────────────────────────
-# Top-level or nested files named exactly ".env"
 .env
 **/.env
-
-# Dot-env files with extensions, e.g. .env.dev, .env.local
 .env.*
 **/.env.*
-
-# Any file that simply ends in ".env"
 *.env
 **/*.env
 
-# ► EXCEPTIONS — keep templates or samples under version control
+# ► EXCEPTIONS — keep templates or samples
 !example.env
 !**/example.env
 # ───────────────────────────────────────────────────────────────
@@ -23,18 +18,15 @@
 # ───────────────────────────────────────────────────────────────
 # 🐍  Python artefacts
 # ───────────────────────────────────────────────────────────────
-# Virtual-environment directories
 venv/
 env/
 myenv/
 
-# Compiled byte-code / caches
 *.pyc
 __pycache__/
 **/__pycache__/
-*/_pycache_/       # older layout
+*/_pycache_/
 
-# Local Python version indicator
 .python-version
 
 
@@ -48,11 +40,15 @@ airflow/logs/
 docker-compose.override.yml
 docker-compose.override.yml.tmp
 
-# Local run logs or temp dirs
+# Local log directories
 logs/
 real_estate_logs/
 
-# Large ML model binaries (add more as needed)
+# Ignore any file with .log extension (new rule)
+*.log
+**/*.log
+
+# Large ML model binaries
 *.pkl
 *.gguf
 # *.bin        # uncomment to block .bin models
