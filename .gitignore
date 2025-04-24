@@ -1,60 +1,61 @@
-# Ignorar entornos virtuales
+# ────────────────────────────────
+# 🔐 Secret environment files
+# ────────────────────────────────
+# Ignora cualquier archivo llamado ".env" o ".env.*"
+.env
+.env.*
+**/.env
+
+# Ignora igualmente cualquier archivo que termine en ".env"
+*.env
+*/**/*.env
+
+# PERO conserva los templates de ejemplo:
+!example.env
+!*/example.env
+# ────────────────────────────────
+
+# Entornos virtuales
 myenv/
 venv/
 env/
+
+# Byte-code y cachés
 *.pyc
 __pycache__/
-airflow/logs/
 */_pycache_/
+
+# Versiones de Python
 .python-version
 
-# Ignorar archivos de configuración de IDE
+# Directorios de logs de Airflow
+airflow/logs/
+
+# Archivos de configuración de IDE
 .vscode/
 .idea/
 *.sublime-workspace
 *.sublime-project
 
-# Ignorar archivos de configuración del sistema operativo
+# Archivos de sistema operativo
 .DS_Store
 Thumbs.db
 
-# Ignorar archivos de registro
+# Archivos de log
 *.log
 
-# Ignorar archivos de bases de datos locales
-# *.sqlite3
+# Archivos binarios/objetos
+*.pkl
+*.gguf
 
-# Ignorar archivos de MinIO descargados localmente
-# *.pdf
-# *.txt
-# *.md
-
-# Ignorar archivos de salida
-# *.csv
-# *.json
-
-# Ignorar archivos y carpetas temporales de Docker
+# Archivos temporales de Docker
 docker-compose.override.yml
 docker-compose.override.yml.tmp
 
-# Ignorar el directorio de Airflow logs
-# airflow/logs/
-
-# Ignorar el directorio de datos
-# data/*.json
-
-# Ignorar ficheros de configuración específicos del usuario
-
-
-*.pkl
-
-**/__pycache__
-*.pyc
-*.pyo
-*.pyd
+# Logs y ficheros temporales propios
 logs/
 real_estate_logs/
 miniconda.exe
 
-# Ignorar modelos de DeepSeek
-*.gguf
+# Modelos DeepSeek (si añades más extensiones, colócalas aquí)
+# *.bin  # ej. descomentar si los necesitas bloquear
