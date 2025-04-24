@@ -37,6 +37,20 @@ cd RAG-LLM
 ```
 
 ### 2. Crear y activar entorno virtual
+```bash
+sudo apt update
+```
+# 2) Instala Python 3 y el módulo venv (si aún no los tienes)
+#    python3 → intérprete
+#    python3-venv → comando `-m venv`
+```bash
+sudo apt install -y python3 python3-venv python3-pip
+```
+# 3) (Opcional) Haz que el comando `python` apunte a `python3`
+#    Para scripts antiguos que llaman a `python`
+```
+sudo apt install -y python-is-python3
+```
 
 ```bash
 python -m venv venv
