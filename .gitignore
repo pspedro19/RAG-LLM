@@ -44,9 +44,8 @@ docker-compose.override.yml.tmp
 # data/*.json
 
 # Ignorar ficheros de configuración específicos del usuario
-.env
-.env.local
-.env*.local
+
+
 *.pkl
 
 **/__pycache__

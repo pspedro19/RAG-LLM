@@ -1,206 +1,187 @@
-##########
+# RAG-LLM: Guía Completa
 
-# Microservices Architecture for Language Model Project
+## Estructura del Proyecto RAG-LLM
 
-## Overview
+Basado en la estructura de archivos proporcionada, este proyecto está organizado como una plataforma robusta para el desarrollo de aplicaciones de IA centradas en RAG (Retrieval-Augmented Generation) y sistemas de agentes:
 
-This project utilizes a microservices architecture to implement and manage a language model. The architecture is designed to facilitate inter-service communication, track machine learning experiments, manage model lifecycles, store artifacts, and monitor tasks. Below is a detailed explanation of each component and how they interact.
-
-$$$$$$$$$$$$$$$$$
-
-
-# Microservices Architecture for Language Model Project
-
-## Overview
-
-This project utilizes a microservices architecture to implement and manage a language model. The architecture is designed to facilitate inter-service communication, track machine learning experiments, manage model lifecycles, store artifacts, and monitor tasks. Below is a detailed explanation of each component and how they interact.
-
-$$$$$$$$$$$$$$$$$
-
-Using apt (Recommended)
-Update the package database:
-
-```bash
-sudo apt update -y
 ```
-Install Docker Compose:
-
-```bash
-sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
-```
-Using snap
-Install Docker using snap:
-
-```bash
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+RAG-LLM/
+├── app/                  # Directorio principal de la aplicación
+│   ├── core/             # Funcionalidades centrales
+│   ├── data/             # Datos de la aplicación
+│   │   ├── documents/pdf/
+│   │   │   ├── information/  # Documentos para TP1 y TP2
+│   │   │   └── tp3_agent/    # Documentos para TP3
+│   │   └── indices/      # Índices FAISS para búsqueda vectorial
+│   ├── embeddings/       # Servicios de embeddings
+│   ├── ingestion/        # Procesamiento y chunking de documentos
+│   ├── query/            # Procesamiento de consultas y recuperación
+│   ├── rag_chat_TP1.py   # Implementación de chatbot RAG (TP1)
+│   ├── langgraph_cv_agents_TP2.py # Sistema de agentes para CVs (TP2)
+│   ├── agent_tp3.py      # Sistema multi-agente con razonamiento (TP3)
+│   └── rag_setup.py      # Utilidad para configurar datos RAG
+├── airflow/              # Configuración y DAGs de Airflow para orquestación
+├── chat-Interface/       # Interfaz web basada en Django
+├── checkpoints/          # Archivos de checkpoints para los modelos
+├── docker-compose.yaml   # Configuración para despliegue con Docker
+└── requirements.txt      # Dependencias del proyecto
 ```
 
-```bash
-sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-```
+## Guía de Instalación y Configuración
+
+### 1. Clonar el repositorio
 
 ```bash
-sudo apt update -y
+git clone https://github.com/tu-usuario/RAG-LLM.git
+cd RAG-LLM
 ```
+
+### 2. Crear y activar entorno virtual
 
 ```bash
-sudo apt install -y docker-ce
-```
-```bash
-sudo systemctl start docker
+python -m venv venv
+
+# En Windows
+venv\Scripts\activate
+
+# En Linux/Mac
+source venv/bin/activate
 ```
 
-```bash
-sudo systemctl enable docker
-```
-
-```bash
-sudo systemctl status docker
-```
+### 3. Instalar dependencias
 
 ```bash
-sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+pip install -r requirements.txt
 ```
 
+### 4. Configurar variables de entorno
+
+Crear un archivo `.env` a partir del archivo ejemplo:
 
 ```bash
-sudo chmod +x /usr/local/bin/docker-compose
+cp example.env .env
+nano .env  # Editar con tus claves API
 ```
+
+Asegúrate de configurar las siguientes variables:
+
+```
+OPENAI_API_KEY=tu_clave_api_de_openai
+EMBEDDINGS_MODEL=text-embedding-3-small
+CHAT_MODEL=gpt-4-turbo
+```
+
+### 5. Preparar documentos
+
+Asegúrate de que los documentos estén en los directorios correctos:
+
+```
+app/data/documents/pdf/information/  # Para TP1 y TP2
+app/data/documents/pdf/tp3_agent/    # Para TP3
+```
+
+## Implementación de los Trabajos Prácticos
+
+### TP1: Chatbot RAG
+
+**Consigna**: Implementar un sistema de generación de texto (chatbot) que utilice la técnica de Retrieval-Augmented Generation (RAG). El chatbot recuperará información de una base de datos (documentos) y la usará para generar respuestas completas.
+
+#### Preparación de datos para TP1
 
 ```bash
-docker-compose --version
+# Limpiar datos existentes (si es necesario)
+python -m app.rag_setup clean
+
+# Ingestar documentos para el sistema RAG
+python -m app.rag_setup ingest --doc-dir app/data/documents/pdf/information
+
+# Sincronizar datos
+python -m app.rag_setup sync
+
+# Reconstruir índice
+python -m app.rag_setup rebuild
 ```
+
+#### Ejecución del chatbot RAG (TP1)
 
 ```bash
-sudo usermod -aG docker $USER
+# Iniciar la aplicación RAG
+python -m app.rag_chat_TP1 --model openai --top-k 16
 ```
+
+#### Funcionalidades demostradas en TP1
+* Carga y procesamiento de documentos PDF
+* Generación de embeddings para búsqueda semántica
+* Consultas sobre la información contenida en los documentos
+* Respuestas generadas aumentadas con información recuperada
+
+### TP2: Sistema de Agentes para CVs
+
+**Consigna**: Implementar un sistema de agentes que responda eficientemente dependiendo de qué persona se está preguntando (1 agente por persona). Por defecto, cuando no se nombra a nadie, utilizar el agente del alumno.
+
+#### Preparación de datos para TP2
 
 ```bash
-docker-compose build
+# Utiliza los mismos datos preparados para TP1
+# O si necesitas recargar:
+
+# Limpiar datos existentes (si es necesario)
+python -m app.rag_setup clean
+
+# Ingestar documentos para el sistema de agentes
+python -m app.rag_setup ingest --doc-dir app/data/documents/pdf/information
+
+# Sincronizar datos
+python -m app.rag_setup sync
+
+# Reconstruir índice
+python -m app.rag_setup rebuild
 ```
 
-
-Download the Docker Compose binary:
+#### Ejecución del sistema de agentes (TP2)
 
 ```bash
-sudo curl -L "https://github.com/docker/compose/releases/download/v2.12.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+# Iniciar la aplicación con langgraph para el manejo de agentes
+python -m app.langgraph_cv_agents_TP2
 ```
-Apply executable permissions to the binary:
+
+#### Funcionalidades demostradas en TP2
+* Sistema multi-agente con un agente específico para cada miembro del equipo
+* Identificación automática del agente correcto basado en consultas
+* Respuestas contextualizadas según el CV consultado
+* Manejo de consultas que involucran múltiples CVs
+* Comportamiento por defecto cuando no se especifica persona
+
+### TP3: LLM con Razonamiento Multi-Agente
+
+**Consigna**: Implementar una aplicación que funcione como un LLM con razonamiento, que reciba una pregunta compleja y utilice diferentes agentes para resolver parcialmente y luego compaginar todas las respuestas para ofrecer la solución.
+
+#### Preparación de datos para TP3
 
 ```bash
-sudo chmod +x /usr/local/bin/docker-compose
+# Limpiar datos existentes (si es necesario)
+python -m app.rag_setup clean
+
+# Ingestar documentos para agentes especializados
+python -m app.rag_setup ingest --doc-dir app/data/documents/pdf/tp3_agent
+
+# Sincronizar datos
+python -m app.rag_setup sync
+
+# Reconstruir índice
+python -m app.rag_setup rebuild
 ```
-Create a symbolic link to make Docker Compose available in the system's PATH:
+
+#### Ejecución del sistema de razonamiento (TP3)
 
 ```bash
-sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+# Iniciar la aplicación multi-agente con razonamiento
+python -m app.agent_tp3
 ```
-Verify that Docker Compose is installed correctly:
 
-```bash
-docker-compose --version
-```
-After installing Docker Compose using either method, you should be able to run `docker-compose build`.
-
-
-
-## MLflow CONFIG
-
-If MLflow is failing to connect because the database `mlflow_db` does not exist, you need to create this database in your PostgreSQL instance.
-
-### Create the `mlflow_db` Database:
-
-1. Connect to your PostgreSQL server using a client like `psql` or any GUI tool.
-    ```sql
-    docker exec -it postgres_airflow psql -U airflow;
-    ```
-
-3. Create the database `mlflow_db`:
-    ```sql
-    CREATE DATABASE mlflow_db;
-    ```
-4. Ensure Correct Database Configuration: Verify that the MLflow configuration in your Docker Compose file or environment variables points to the correct database:
-    ```yaml
-    environment:
-      - MLFLOW_TRACKING_URI=postgresql://username:password@postgres/mlflow_db
-    ```
-    ```sh
-    docker restart mlflow_tracking
-    ```
-    
-
-
-## Full Steps
-
-1. **Rebuild the Docker Images:**
-    ```sh
-    docker-compose build
-    ```
-2. **Create the `mlflow_db` Database:**
-    - Connect to PostgreSQL and create the database:
-    ```sh
-    docker-compose exec postgres_airflow psql -U airflow
-    CREATE DATABASE mlflow_db;
-    ```
-3. **Restart Services:**
-    - Restart your Docker Compose services to apply the changes:
-    ```sh
-    docker-compose up -d
-    ```
-
-4. In the root folder of this repository, execute:
-    ```sh
-    docker compose --profile all up
-    ```
-
-Once all the services are up and running (verify with the command docker ps -a that all services are healthy or check in Docker Desktop), you can access the various services through:
-
-   - Apache Airflow: http://localhost:8080
-   - MLflow: http://localhost:5000
-   - MinIO (service): http://localhost:9000 
-   - MinIO (Buckets Administration): http://localhost:9001
-   - Django Chat Interface: http://localhost:8800
-   - FastAPI: http://localhost:8000
-
-API Docs: http://localhost:8800/docs
-If you are using a server external to your work computer, replace localhost with its IP address (it can be a private IP if your server is on your LAN or a public IP otherwise; check firewalls or other rules that may prevent connections).
-
-All ports and other configurations can be modified in the .env file. You are encouraged to experiment and learn by trial and error; you can always re-clone this repository.
-## Architecture Components
-
-1. **Chat**
-   - Purpose: Manages the user interface and processes user requests.
-   - Connection: Sends user requests to the REST API for processing.
-2. **REST API (FastAPI)**
-   - Purpose: Provides inter-service communication between the components of the architecture.
-   - Connection: Receives requests from the Chat service and forwards them to MLflow for model interactions and artifact handling.
-3. **MLflow**
-   - Purpose: Tracks machine learning experiments and manages the model lifecycle.
-   - Connection: Receives data from REST API, interacts with Apache Airflow to orchestrate workflows, stores and retrieves artifacts from MinIO, and utilizes PostgreSQL for metadata storage.
-4. **Apache Airflow**
-   - Purpose: Orchestrates workflows and schedules tasks.
-   - Connection: Schedules tasks through a dedicated Scheduler, provides monitoring through a Webserver, sends and receives performance metrics to and from Wandb.
-5. **Scheduler & Webserver**
-   - Purpose: These components are part of Apache Airflow.
-   - Scheduler: Manages the timing of workflows.
-   - Webserver: Provides a GUI for monitoring the scheduled tasks.
-6. **Wandb**
-   - Purpose: Tracks the visualization and performance of models.
-   - Connection: Receives data from Apache Airflow to visualize task performance.
-7. **MinIO**
-   - Purpose: S3-compatible storage used for managing ML artifacts.
-   - Connection: Stores artifacts generated or used by MLflow.
-8. **PostgreSQL**
-   - Purpose: Database used for storing metadata and operational data.
-   - Connection: Stores experiment and model data for MLflow, maintains operational data for Apache Airflow.
-
-## Diagram Visualization
-
-The microservices architecture diagram visually represents the interconnections between different services. Each service is depicted with its respective icon and connected through lines indicating data flow and interactions.
-
-## Suggestions for Improvement
-
-- **Security:** Implement security measures like API gateways or OAuth to manage access to the services.
-- **Scalability:** Consider container orchestration solutions like Kubernetes for better scalability and management of services.
-- **Monitoring:** Integrate comprehensive monitoring tools like Prometheus and Grafana for better insight into service performance and health.
-- **Bidirectional Data Flow:** Review and ensure that bidirectional data flows are necessary and optimized for performance.
+#### Funcionalidades demostradas en TP3
+* Procesamiento de preguntas complejas
+* Descomposición en sub-problemas asignados a agentes especializados
+* Razonamiento intermedio y resolución parcial por agentes
+* Compaginación de respuestas parciales en una solución completa
+* Contabilización y visualización de tokens (entrada, salida, razonamiento)

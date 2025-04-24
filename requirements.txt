@@ -49,3 +49,4 @@ PyPDF2
 argostranslate
 openai>=1.0.0
 anthropic>=0.7.0
+tiktoken

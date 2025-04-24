@@ -1,0 +1,30 @@
+# Base requirements
+python-dotenv
+fastapi
+uvicorn
+openai==0.28
+pydantic
+pandas
+requests
+aiosqlite
+aiohttp
+
+# Database
+psycopg2-binary
+
+# NLP and ML
+spacy
+pycountry
+python-Levenshtein==0.23.0
+transformers
+scikit-learn
+torch
+sentence-transformers
+langchain
+
+# Document processing
+PyMuPDF
+peft
+
+# Storage
+minio
