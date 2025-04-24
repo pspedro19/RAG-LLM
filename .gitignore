@@ -1,64 +1,74 @@
-# ────────────────────────────────
-# 🔐 Secret environment files
-# ────────────────────────────────
-# Ignora cualquier archivo llamado ".env" o ".env.*"
+# ───────────────────────────────────────────────────────────────
+# 🔐  Secret environment files
+#     ‒ Ignore every real .env but keep the template example.env
+# ───────────────────────────────────────────────────────────────
+# Top-level or nested files named exactly ".env"
 .env
-.env.*
 **/.env
 
-# Ignora igualmente cualquier archivo que termine en ".env"
+# Dot-env files with extensions, e.g. .env.dev, .env.local
+.env.*
+**/.env.*
+
+# Any file that simply ends in ".env"
 *.env
-*/**/*.env
+**/*.env
 
-# PERO conserva los templates de ejemplo:
+# ► EXCEPTIONS — keep templates or samples under version control
 !example.env
-!*/example.env
-# ────────────────────────────────
+!**/example.env
+# ───────────────────────────────────────────────────────────────
 
-# Entornos virtuales
-myenv/
+
+# ───────────────────────────────────────────────────────────────
+# 🐍  Python artefacts
+# ───────────────────────────────────────────────────────────────
+# Virtual-environment directories
 venv/
 env/
+myenv/
 
-# Byte-code y cachés
+# Compiled byte-code / caches
 *.pyc
 __pycache__/
-*/_pycache_/
+**/__pycache__/
+*/_pycache_/       # older layout
 
-# Versiones de Python
+# Local Python version indicator
 .python-version
 
-# Directorios de logs de Airflow
+
+# ───────────────────────────────────────────────────────────────
+# 🚀  Project-specific build / run outputs
+# ───────────────────────────────────────────────────────────────
+# Airflow logs
 airflow/logs/
 
-# Archivos de configuración de IDE
+# Docker overrides / temporaries
+docker-compose.override.yml
+docker-compose.override.yml.tmp
+
+# Local run logs or temp dirs
+logs/
+real_estate_logs/
+
+# Large ML model binaries (add more as needed)
+*.pkl
+*.gguf
+# *.bin        # uncomment to block .bin models
+
+
+# ───────────────────────────────────────────────────────────────
+# 💻  IDE / Editor settings
+# ───────────────────────────────────────────────────────────────
 .vscode/
 .idea/
 *.sublime-workspace
 *.sublime-project
 
-# Archivos de sistema operativo
-.DS_Store
-Thumbs.db
 
-# Archivos de log
-*.log
-
-# Archivos binarios/objetos
-*.pkl
-*.gguf
-
-# Archivos temporales de Docker
-docker-compose.override.yml
-docker-compose.override.yml.tmp
-
-# Logs y ficheros temporales propios
-logs/
-real_estate_logs/
-miniconda.exe
-
-# Modelos DeepSeek (si añades más extensiones, colócalas aquí)
-# *.bin  # ej. descomentar si los necesitas bloquear
-.env
-.env
-.env
+# ───────────────────────────────────────────────────────────────
+# 🖥️  OS-specific cruft
+# ───────────────────────────────────────────────────────────────
+.DS_Store        # macOS
+Thumbs.db        # Windows

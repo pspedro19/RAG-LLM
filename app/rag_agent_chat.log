@@ -1,0 +1,229 @@
+2025-04-23 00:55:21,151 - datasets - INFO - PyTorch version 2.6.0 available.
+2025-04-23 00:55:21,768 - faiss.loader - INFO - Loading faiss with AVX2 support.
+2025-04-23 00:55:21,797 - faiss.loader - INFO - Successfully loaded faiss with AVX2 support.
+2025-04-23 00:55:21,802 - faiss - INFO - Failed to load GPU Faiss: name 'GpuIndexIVFFlat' is not defined. Will not load constructor refs for GPU indexes.
+2025-04-23 00:55:23,337 - rag-agent-chat - WARNING - LangChain/LangGraph not installed. Agent capabilities will be limited.
+2025-04-23 00:55:23,345 - rag-agent-chat - INFO - Using localhost for PostgreSQL connection
+2025-04-23 00:55:23,384 - rag-agent-chat - INFO - OpenAI client initialized successfully
+2025-04-23 00:55:23,396 - rag-agent-chat - INFO - Claude client initialized successfully
+2025-04-23 00:55:23,396 - rag-agent-chat - INFO - Reflective RAG Chat initialized (model: openai, top-k: 5, agent: False)
+2025-04-23 00:55:23,396 - rag-agent-chat - INFO - Initializing components...
+2025-04-23 00:55:23,400 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: cpu
+2025-04-23 00:55:23,400 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-04-23 00:55:24,133 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: cpu
+2025-04-23 00:55:24,133 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: multi-qa-mpnet-base-dot-v1
+2025-04-23 00:55:24,620 - rag-agent-chat - INFO - Components initialized successfully
+2025-04-23 00:57:34,373 - rag-agent-chat - INFO - Reflective RAG Chat resources closed
+2025-04-23 00:58:16,197 - datasets - INFO - PyTorch version 2.6.0 available.
+2025-04-23 00:58:16,834 - faiss.loader - INFO - Loading faiss with AVX2 support.
+2025-04-23 00:58:16,862 - faiss.loader - INFO - Successfully loaded faiss with AVX2 support.
+2025-04-23 00:58:16,867 - faiss - INFO - Failed to load GPU Faiss: name 'GpuIndexIVFFlat' is not defined. Will not load constructor refs for GPU indexes.
+2025-04-23 00:58:18,245 - rag-agent-chat - WARNING - LangChain/LangGraph not installed. Agent capabilities will be limited.
+2025-04-23 00:58:18,253 - rag-agent-chat - INFO - Using localhost for PostgreSQL connection
+2025-04-23 00:58:18,289 - rag-agent-chat - INFO - OpenAI client initialized successfully
+2025-04-23 00:58:18,300 - rag-agent-chat - INFO - Claude client initialized successfully
+2025-04-23 00:58:18,301 - rag-agent-chat - INFO - Reflective RAG Chat initialized (model: openai, top-k: 5, agent: False)
+2025-04-23 00:58:18,301 - rag-agent-chat - INFO - Initializing components...
+2025-04-23 00:58:18,304 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: cpu
+2025-04-23 00:58:18,304 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-04-23 00:58:18,955 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: cpu
+2025-04-23 00:58:18,955 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: multi-qa-mpnet-base-dot-v1
+2025-04-23 00:58:19,336 - rag-agent-chat - INFO - Components initialized successfully
+2025-04-23 01:00:21,761 - rag-agent-chat - INFO - Reflective RAG Chat resources closed
+2025-04-23 01:00:38,609 - datasets - INFO - PyTorch version 2.6.0 available.
+2025-04-23 01:00:39,239 - faiss.loader - INFO - Loading faiss with AVX2 support.
+2025-04-23 01:00:39,271 - faiss.loader - INFO - Successfully loaded faiss with AVX2 support.
+2025-04-23 01:00:39,277 - faiss - INFO - Failed to load GPU Faiss: name 'GpuIndexIVFFlat' is not defined. Will not load constructor refs for GPU indexes.
+2025-04-23 01:00:40,844 - rag-agent-chat - WARNING - LangChain/LangGraph not installed. Agent capabilities will be limited.
+2025-04-23 01:00:40,854 - rag-agent-chat - INFO - Using localhost for PostgreSQL connection
+2025-04-23 01:00:40,896 - rag-agent-chat - INFO - OpenAI client initialized successfully
+2025-04-23 01:00:40,909 - rag-agent-chat - INFO - Claude client initialized successfully
+2025-04-23 01:00:40,909 - rag-agent-chat - INFO - Reflective RAG Chat initialized (model: openai, top-k: 5, agent: False)
+2025-04-23 01:00:40,909 - rag-agent-chat - INFO - Initializing components...
+2025-04-23 01:00:40,913 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: cpu
+2025-04-23 01:00:40,913 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-04-23 01:00:41,478 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: cpu
+2025-04-23 01:00:41,478 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: multi-qa-mpnet-base-dot-v1
+2025-04-23 01:00:41,944 - rag-agent-chat - INFO - Components initialized successfully
+2025-04-23 01:00:49,689 - rag-agent-chat - INFO - Reflective RAG Chat resources closed
+2025-04-23 01:01:06,536 - datasets - INFO - PyTorch version 2.6.0 available.
+2025-04-23 01:01:07,256 - faiss.loader - INFO - Loading faiss with AVX2 support.
+2025-04-23 01:01:07,287 - faiss.loader - INFO - Successfully loaded faiss with AVX2 support.
+2025-04-23 01:01:07,295 - faiss - INFO - Failed to load GPU Faiss: name 'GpuIndexIVFFlat' is not defined. Will not load constructor refs for GPU indexes.
+2025-04-23 01:01:08,874 - rag-agent-chat - WARNING - LangChain/LangGraph not installed. Agent capabilities will be limited.
+2025-04-23 01:01:08,883 - rag-agent-chat - INFO - Using localhost for PostgreSQL connection
+2025-04-23 01:01:08,924 - rag-agent-chat - INFO - OpenAI client initialized successfully
+2025-04-23 01:01:08,935 - rag-agent-chat - INFO - Claude client initialized successfully
+2025-04-23 01:01:08,935 - rag-agent-chat - INFO - Reflective RAG Chat initialized (model: openai, top-k: 5, agent: False)
+2025-04-23 01:01:08,936 - rag-agent-chat - INFO - Initializing components...
+2025-04-23 01:01:08,939 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: cpu
+2025-04-23 01:01:08,939 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-04-23 01:01:09,402 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: cpu
+2025-04-23 01:01:09,402 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: multi-qa-mpnet-base-dot-v1
+2025-04-23 01:01:10,554 - rag-agent-chat - INFO - Components initialized successfully
+2025-04-23 01:01:59,337 - rag-agent-chat - INFO - Reflective RAG Chat resources closed
+2025-04-23 01:02:13,677 - datasets - INFO - PyTorch version 2.6.0 available.
+2025-04-23 01:02:14,340 - faiss.loader - INFO - Loading faiss with AVX2 support.
+2025-04-23 01:02:14,371 - faiss.loader - INFO - Successfully loaded faiss with AVX2 support.
+2025-04-23 01:02:14,377 - faiss - INFO - Failed to load GPU Faiss: name 'GpuIndexIVFFlat' is not defined. Will not load constructor refs for GPU indexes.
+2025-04-23 01:02:15,910 - rag-agent-chat - WARNING - LangChain/LangGraph not installed. Agent capabilities will be limited.
+2025-04-23 01:02:15,919 - rag-agent-chat - INFO - Using localhost for PostgreSQL connection
+2025-04-23 01:02:15,955 - rag-agent-chat - INFO - OpenAI client initialized successfully
+2025-04-23 01:02:15,966 - rag-agent-chat - INFO - Claude client initialized successfully
+2025-04-23 01:02:15,966 - rag-agent-chat - INFO - Reflective RAG Chat initialized (model: openai, top-k: 5, agent: False)
+2025-04-23 01:02:15,966 - rag-agent-chat - INFO - Initializing components...
+2025-04-23 01:02:15,966 - app.core.pipelines.search_pipeline - INFO - Using localhost to connect to PostgreSQL
+2025-04-23 01:02:15,970 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: cpu
+2025-04-23 01:02:15,970 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-04-23 01:02:16,456 - app.embeddings.embedding_service - INFO - Modelo all-MiniLM-L6-v2 cargado correctamente
+2025-04-23 01:02:16,456 - app.embeddings.embedding_service - INFO - Embedder local 'miniLM' inicializado con modelo all-MiniLM-L6-v2
+2025-04-23 01:02:16,459 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: cpu
+2025-04-23 01:02:16,459 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: multi-qa-mpnet-base-dot-v1
+2025-04-23 01:02:16,821 - app.embeddings.embedding_service - INFO - Modelo multi-qa-mpnet-base-dot-v1 cargado correctamente
+2025-04-23 01:02:16,821 - app.embeddings.embedding_service - INFO - Embedder local 'mpnet' inicializado con modelo multi-qa-mpnet-base-dot-v1
+2025-04-23 01:02:16,821 - app.embeddings.embedding_service - INFO - Caché de embeddings configurada con tamaño 1024
+2025-04-23 01:02:16,821 - app.core.faiss_manager - INFO - Initializing FAISSVectorStore with dimension 384
+2025-04-23 01:02:16,822 - app.core.faiss_manager - INFO - FAISS index created successfully
+2025-04-23 01:02:16,822 - app.core.faiss_manager - INFO - Loading FAISS index from /root/RAG-LLM/app/data/indices/faiss_index_384.bin
+2025-04-23 01:02:16,826 - app.core.faiss_manager - INFO - Index loaded successfully: 2519 vectors
+2025-04-23 01:02:16,826 - app.query.query_processor - INFO - Modelos de traducción ya instalados
+2025-04-23 01:02:16,827 - app.core.pipelines.search_pipeline - INFO - Search pipeline initialized
+2025-04-23 01:02:16,828 - rag-agent-chat - INFO - Components initialized successfully
+2025-04-23 01:02:25,093 - app.core.pipelines.search_pipeline - INFO - Search pipeline resources closed
+2025-04-23 01:02:25,094 - rag-agent-chat - INFO - Reflective RAG Chat resources closed
+2025-04-23 01:02:40,436 - datasets - INFO - PyTorch version 2.6.0 available.
+2025-04-23 01:02:41,124 - faiss.loader - INFO - Loading faiss with AVX2 support.
+2025-04-23 01:02:41,154 - faiss.loader - INFO - Successfully loaded faiss with AVX2 support.
+2025-04-23 01:02:41,160 - faiss - INFO - Failed to load GPU Faiss: name 'GpuIndexIVFFlat' is not defined. Will not load constructor refs for GPU indexes.
+2025-04-23 01:02:42,827 - rag-agent-chat - WARNING - LangChain/LangGraph not installed. Agent capabilities will be limited.
+2025-04-23 01:02:42,840 - rag-agent-chat - INFO - Using localhost for PostgreSQL connection
+2025-04-23 01:02:42,901 - rag-agent-chat - INFO - OpenAI client initialized successfully
+2025-04-23 01:02:42,919 - rag-agent-chat - INFO - Claude client initialized successfully
+2025-04-23 01:02:42,920 - rag-agent-chat - INFO - Reflective RAG Chat initialized (model: openai, top-k: 5, agent: False)
+2025-04-23 01:02:42,920 - rag-agent-chat - INFO - Initializing components...
+2025-04-23 01:02:42,920 - app.core.pipelines.search_pipeline - INFO - Using localhost to connect to PostgreSQL
+2025-04-23 01:02:42,925 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: cpu
+2025-04-23 01:02:42,925 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-04-23 01:02:43,461 - app.embeddings.embedding_service - INFO - Modelo all-MiniLM-L6-v2 cargado correctamente
+2025-04-23 01:02:43,461 - app.embeddings.embedding_service - INFO - Embedder local 'miniLM' inicializado con modelo all-MiniLM-L6-v2
+2025-04-23 01:02:43,465 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: cpu
+2025-04-23 01:02:43,465 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: multi-qa-mpnet-base-dot-v1
+2025-04-23 01:02:43,882 - app.embeddings.embedding_service - INFO - Modelo multi-qa-mpnet-base-dot-v1 cargado correctamente
+2025-04-23 01:02:43,882 - app.embeddings.embedding_service - INFO - Embedder local 'mpnet' inicializado con modelo multi-qa-mpnet-base-dot-v1
+2025-04-23 01:02:43,882 - app.embeddings.embedding_service - INFO - Caché de embeddings configurada con tamaño 1024
+2025-04-23 01:02:43,883 - app.core.faiss_manager - INFO - Initializing FAISSVectorStore with dimension 384
+2025-04-23 01:02:43,883 - app.core.faiss_manager - INFO - FAISS index created successfully
+2025-04-23 01:02:43,883 - app.core.faiss_manager - INFO - Loading FAISS index from /root/RAG-LLM/app/data/indices/faiss_index_384.bin
+2025-04-23 01:02:43,887 - app.core.faiss_manager - INFO - Index loaded successfully: 2519 vectors
+2025-04-23 01:02:43,888 - app.query.query_processor - INFO - Modelos de traducción ya instalados
+2025-04-23 01:02:43,890 - app.core.pipelines.search_pipeline - INFO - Search pipeline initialized
+2025-04-23 01:02:43,890 - rag-agent-chat - INFO - Components initialized successfully
+2025-04-23 01:02:57,740 - app.core.pipelines.search_pipeline - INFO - Search pipeline resources closed
+2025-04-23 01:02:57,741 - rag-agent-chat - INFO - Reflective RAG Chat resources closed
+2025-04-23 01:05:37,280 - datasets - INFO - PyTorch version 2.6.0 available.
+2025-04-23 01:05:38,068 - faiss.loader - INFO - Loading faiss with AVX2 support.
+2025-04-23 01:05:38,107 - faiss.loader - INFO - Successfully loaded faiss with AVX2 support.
+2025-04-23 01:05:38,119 - faiss - INFO - Failed to load GPU Faiss: name 'GpuIndexIVFFlat' is not defined. Will not load constructor refs for GPU indexes.
+2025-04-23 01:05:39,700 - rag-agent-chat - WARNING - LangChain/LangGraph not installed. Agent capabilities will be limited.
+2025-04-23 01:05:39,709 - rag-agent-chat - INFO - Using localhost for PostgreSQL connection
+2025-04-23 01:05:39,754 - rag-agent-chat - INFO - OpenAI client initialized successfully
+2025-04-23 01:05:39,772 - rag-agent-chat - INFO - Claude client initialized successfully
+2025-04-23 01:05:39,772 - rag-agent-chat - INFO - Reflective RAG Chat initialized (model: openai, top-k: 5, agent: False)
+2025-04-23 01:05:39,772 - rag-agent-chat - INFO - Initializing components...
+2025-04-23 01:05:39,772 - app.core.pipelines.search_pipeline - INFO - Using localhost to connect to PostgreSQL
+2025-04-23 01:05:39,776 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: cpu
+2025-04-23 01:05:39,776 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-04-23 01:05:40,264 - app.embeddings.embedding_service - INFO - Modelo all-MiniLM-L6-v2 cargado correctamente
+2025-04-23 01:05:40,264 - app.embeddings.embedding_service - INFO - Embedder local 'miniLM' inicializado con modelo all-MiniLM-L6-v2
+2025-04-23 01:05:40,268 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: cpu
+2025-04-23 01:05:40,268 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: multi-qa-mpnet-base-dot-v1
+2025-04-23 01:05:48,229 - app.embeddings.embedding_service - INFO - Modelo multi-qa-mpnet-base-dot-v1 cargado correctamente
+2025-04-23 01:05:48,229 - app.embeddings.embedding_service - INFO - Embedder local 'mpnet' inicializado con modelo multi-qa-mpnet-base-dot-v1
+2025-04-23 01:05:48,229 - app.embeddings.embedding_service - INFO - Caché de embeddings configurada con tamaño 1024
+2025-04-23 01:05:48,229 - app.core.faiss_manager - INFO - Initializing FAISSVectorStore with dimension 384
+2025-04-23 01:05:48,229 - app.core.faiss_manager - INFO - FAISS index created successfully
+2025-04-23 01:05:48,230 - app.core.faiss_manager - INFO - Loading FAISS index from /root/RAG-LLM/app/data/indices/faiss_index_384.bin
+2025-04-23 01:05:48,234 - app.core.faiss_manager - INFO - Index loaded successfully: 2519 vectors
+2025-04-23 01:05:48,234 - app.query.query_processor - INFO - Modelos de traducción ya instalados
+2025-04-23 01:05:48,235 - app.core.pipelines.search_pipeline - INFO - Search pipeline initialized
+2025-04-23 01:05:48,235 - rag-agent-chat - INFO - Components initialized successfully
+2025-04-23 01:08:00,187 - rag-agent-chat - INFO - Processing query with standard pipeline: pip install langchain-openai langchain-anthropic...
+2025-04-23 01:08:00,187 - rag-agent-chat - INFO - Uncategorized query, won't use RAG: 'pip install langchain-openai langchain-anthropic'
+2025-04-23 01:08:00,191 - openai._base_client - DEBUG - Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': "You are a reflective tourism assistant specializing in Curaçao. Respond concisely and naturally.\n            If you don't have sufficient information to answer, clearly indicate this and suggest what\n            information would be needed for a more complete answer.\n            \n            Always consider the logical implications of your responses and be transparent about \n            any assumptions you make. When uncertain, acknowledge limitations in your knowledge.\n            \n            \n            \n            IMPORTANT: Maintain conversation continuity. Remember previous interactions and build upon them.\n            Don't repeat information unless specifically requested."}, {'role': 'user', 'content': 'pip install langchain-openai langchain-anthropic'}], 'model': 'gpt-3.5-turbo', 'max_tokens': 1000, 'temperature': 0.2}}
+2025-04-23 01:08:00,194 - openai._base_client - DEBUG - Sending HTTP Request: POST https://api.openai.com/v1/chat/completions
+2025-04-23 01:08:00,195 - httpcore.connection - DEBUG - connect_tcp.started host='api.openai.com' port=443 local_address=None timeout=5.0 socket_options=None
+2025-04-23 01:08:00,199 - httpcore.connection - DEBUG - connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x7fa78f3e2300>
+2025-04-23 01:08:00,200 - httpcore.connection - DEBUG - start_tls.started ssl_context=<ssl.SSLContext object at 0x7fa7b640aa50> server_hostname='api.openai.com' timeout=5.0
+2025-04-23 01:08:00,207 - httpcore.connection - DEBUG - start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x7fa78fef2060>
+2025-04-23 01:08:00,207 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
+2025-04-23 01:08:00,208 - httpcore.http11 - DEBUG - send_request_headers.complete
+2025-04-23 01:08:00,208 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
+2025-04-23 01:08:00,208 - httpcore.http11 - DEBUG - send_request_body.complete
+2025-04-23 01:08:00,208 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
+2025-04-23 01:08:01,544 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Wed, 23 Apr 2025 01:08:01 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'access-control-expose-headers', b'X-Request-ID'), (b'openai-organization', b'pspedro19'), (b'openai-processing-ms', b'706'), (b'openai-version', b'2020-10-01'), (b'x-ratelimit-limit-requests', b'10000'), (b'x-ratelimit-limit-tokens', b'200000'), (b'x-ratelimit-remaining-requests', b'9999'), (b'x-ratelimit-remaining-tokens', b'199812'), (b'x-ratelimit-reset-requests', b'8.64s'), (b'x-ratelimit-reset-tokens', b'56ms'), (b'x-request-id', b'req_b22d384f87c3d6b36fe060334aa3fdf5'), (b'strict-transport-security', b'max-age=31536000; includeSubDomains; preload'), (b'cf-cache-status', b'DYNAMIC'), (b'Set-Cookie', b'__cf_bm=0mwNT0ULkKrbupzpwpU5ZBEa6daqofMzXrqa0ohw0Ns-1745370481-1.0.1.1-yJI9zFAPqEbURjFq6sNE77F9uICebAe2s_5OVnnowVPqoCm90RuXv4pJlUL_EHBURe1PP3gxEmlSkPaLoXMZMDH3kp7ZKL3aAxNM5uUjPoA; path=/; expires=Wed, 23-Apr-25 01:38:01 GMT; domain=.api.openai.com; HttpOnly; Secure; SameSite=None'), (b'X-Content-Type-Options', b'nosniff'), (b'Set-Cookie', b'_cfuvid=M8zBfpyNCq8lNlWFAiWpU4vKd7cFAn1pnV.GJnmihsI-1745370481563-0.0.1.1-604800000; path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None'), (b'Server', b'cloudflare'), (b'CF-RAY', b'9349779d7cd0f788-EWR'), (b'Content-Encoding', b'gzip'), (b'alt-svc', b'h3=":443"; ma=86400')])
+2025-04-23 01:08:01,546 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-23 01:08:01,546 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
+2025-04-23 01:08:01,547 - httpcore.http11 - DEBUG - receive_response_body.complete
+2025-04-23 01:08:01,547 - httpcore.http11 - DEBUG - response_closed.started
+2025-04-23 01:08:01,547 - httpcore.http11 - DEBUG - response_closed.complete
+2025-04-23 01:08:01,548 - openai._base_client - DEBUG - HTTP Response: POST https://api.openai.com/v1/chat/completions "200 OK" Headers([('date', 'Wed, 23 Apr 2025 01:08:01 GMT'), ('content-type', 'application/json'), ('transfer-encoding', 'chunked'), ('connection', 'keep-alive'), ('access-control-expose-headers', 'X-Request-ID'), ('openai-organization', 'pspedro19'), ('openai-processing-ms', '706'), ('openai-version', '2020-10-01'), ('x-ratelimit-limit-requests', '10000'), ('x-ratelimit-limit-tokens', '200000'), ('x-ratelimit-remaining-requests', '9999'), ('x-ratelimit-remaining-tokens', '199812'), ('x-ratelimit-reset-requests', '8.64s'), ('x-ratelimit-reset-tokens', '56ms'), ('x-request-id', 'req_b22d384f87c3d6b36fe060334aa3fdf5'), ('strict-transport-security', 'max-age=31536000; includeSubDomains; preload'), ('cf-cache-status', 'DYNAMIC'), ('set-cookie', '__cf_bm=0mwNT0ULkKrbupzpwpU5ZBEa6daqofMzXrqa0ohw0Ns-1745370481-1.0.1.1-yJI9zFAPqEbURjFq6sNE77F9uICebAe2s_5OVnnowVPqoCm90RuXv4pJlUL_EHBURe1PP3gxEmlSkPaLoXMZMDH3kp7ZKL3aAxNM5uUjPoA; path=/; expires=Wed, 23-Apr-25 01:38:01 GMT; domain=.api.openai.com; HttpOnly; Secure; SameSite=None'), ('x-content-type-options', 'nosniff'), ('set-cookie', '_cfuvid=M8zBfpyNCq8lNlWFAiWpU4vKd7cFAn1pnV.GJnmihsI-1745370481563-0.0.1.1-604800000; path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None'), ('server', 'cloudflare'), ('cf-ray', '9349779d7cd0f788-EWR'), ('content-encoding', 'gzip'), ('alt-svc', 'h3=":443"; ma=86400')])
+2025-04-23 01:08:01,548 - openai._base_client - DEBUG - request_id: req_b22d384f87c3d6b36fe060334aa3fdf5
+2025-04-23 01:08:07,384 - app.core.pipelines.search_pipeline - INFO - Search pipeline resources closed
+2025-04-23 01:08:07,384 - rag-agent-chat - INFO - Reflective RAG Chat resources closed
+2025-04-23 01:08:07,678 - httpcore.connection - DEBUG - close.started
+2025-04-23 01:08:07,679 - httpcore.connection - DEBUG - close.complete
+2025-04-23 01:10:32,852 - datasets - INFO - PyTorch version 2.6.0 available.
+2025-04-23 01:10:33,502 - faiss.loader - INFO - Loading faiss with AVX2 support.
+2025-04-23 01:10:33,532 - faiss.loader - INFO - Successfully loaded faiss with AVX2 support.
+2025-04-23 01:10:33,538 - faiss - INFO - Failed to load GPU Faiss: name 'GpuIndexIVFFlat' is not defined. Will not load constructor refs for GPU indexes.
+2025-04-23 01:10:35,739 - rag-agent-chat - INFO - Using localhost for PostgreSQL connection
+2025-04-23 01:10:35,815 - rag-agent-chat - INFO - OpenAI client initialized successfully
+2025-04-23 01:10:35,835 - rag-agent-chat - INFO - Claude client initialized successfully
+2025-04-23 01:10:35,897 - rag-agent-chat - INFO - LangGraph agent initialized successfully
+2025-04-23 01:10:35,898 - rag-agent-chat - INFO - Reflective RAG Chat initialized (model: openai, top-k: 5, agent: True)
+2025-04-23 01:10:35,898 - rag-agent-chat - INFO - Initializing components...
+2025-04-23 01:10:35,898 - app.core.pipelines.search_pipeline - INFO - Using localhost to connect to PostgreSQL
+2025-04-23 01:10:35,907 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: cpu
+2025-04-23 01:10:35,907 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-04-23 01:10:36,484 - app.embeddings.embedding_service - INFO - Modelo all-MiniLM-L6-v2 cargado correctamente
+2025-04-23 01:10:36,484 - app.embeddings.embedding_service - INFO - Embedder local 'miniLM' inicializado con modelo all-MiniLM-L6-v2
+2025-04-23 01:10:36,489 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: cpu
+2025-04-23 01:10:36,494 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: multi-qa-mpnet-base-dot-v1
+2025-04-23 01:10:36,913 - app.embeddings.embedding_service - INFO - Modelo multi-qa-mpnet-base-dot-v1 cargado correctamente
+2025-04-23 01:10:36,913 - app.embeddings.embedding_service - INFO - Embedder local 'mpnet' inicializado con modelo multi-qa-mpnet-base-dot-v1
+2025-04-23 01:10:36,914 - app.embeddings.embedding_service - INFO - Caché de embeddings configurada con tamaño 1024
+2025-04-23 01:10:36,914 - app.core.faiss_manager - INFO - Initializing FAISSVectorStore with dimension 384
+2025-04-23 01:10:36,914 - app.core.faiss_manager - INFO - FAISS index created successfully
+2025-04-23 01:10:36,914 - app.core.faiss_manager - INFO - Loading FAISS index from /root/RAG-LLM/app/data/indices/faiss_index_384.bin
+2025-04-23 01:10:36,919 - app.core.faiss_manager - INFO - Index loaded successfully: 2519 vectors
+2025-04-23 01:10:36,920 - app.query.query_processor - INFO - Modelos de traducción ya instalados
+2025-04-23 01:10:36,922 - app.core.pipelines.search_pipeline - INFO - Search pipeline initialized
+2025-04-23 01:10:36,922 - rag-agent-chat - INFO - Components initialized successfully
+2025-04-23 01:15:45,758 - rag-agent-chat - INFO - Processing query with agent: exit...
+2025-04-23 01:15:45,758 - rag-agent-chat - INFO - Creating new agent state
+2025-04-23 01:15:45,758 - rag-agent-chat - INFO - Running agent workflow for query: exit...
+2025-04-23 01:15:45,765 - rag-agent-chat - DEBUG - Agent processing with 2 messages
+2025-04-23 01:15:45,771 - openai._base_client - DEBUG - Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'json_data': {'messages': [{'content': 'You are a Reflective Tourism Assistant that combines knowledge retrieval with critical thinking,\n    specializing in providing information about Curaçao.\n\n    IMPORTANT: Always maintain conversation continuity. Remember previous exchanges and don\'t repeat information\n    unless explicitly asked. If the user mentions something vague like "history" or "beaches", understand this\n    in the context of Curaçao tourism.\n\n    Your approach to answering questions follows this methodology:\n\n    1. ASSESS: Determine if the question requires factual knowledge about Curaçao tourism, reasoning, or both\n       - For factual questions (e.g., "What beaches are in Curaçao?"), use the reflective_retrieval tool\n       - For analytical questions (e.g., "What\'s the best time to visit?"), use the structured_reasoning tool\n       - For complex questions, you may use both tools in sequence\n\n    2. REFLECT: After using any tool, carefully analyze the results\n       - Consider the relevance, completeness, and reliability of information\n       - Identify any gaps, assumptions, or limitations in your understanding\n       - Determine if additional tool use would improve your answer\n\n    3. RESPOND: Provide a clear, accurate answer that:\n       - Directly addresses the user\'s question about Curaçao tourism\n       - Incorporates insights from your tools and reflection\n       - Acknowledges any limitations or uncertainties\n       - Uses natural, conversational language\n\n    CONVERSATION CONSISTENCY:\n    - Track what the user has already asked and what you\'ve already shared\n    - Avoid repeating the same information unless requested\n    - If the user asks a vague follow-up (like "tell me more" or "what about history?"), \n      interpret it in context of the conversation about Curaçao\n\n    For questions about Curaçao\'s history:\n    - Organize information chronologically when possible\n    - Include relevant dates and time periods\n    - Mention key historical events and their significance\n    - Explain cultural and historical context\n\n    Remember: Your goal is to provide not just accurate information about Curaçao, but also to \n    maintain a natural, coherent conversation that builds on previous exchanges.\n    ', 'role': 'system'}, {'content': 'exit', 'role': 'user'}], 'model': 'gpt-3.5-turbo', 'stream': False, 'temperature': 0.2, 'tools': [{'type': 'function', 'function': {'name': 'reflective_retrieval', 'description': "Retrieve information from your knowledge base and reflect on its quality and relevance.\n\nArgs:\n    query: The user's question or information need\n    context: Optional context from previous interactions\n\nReturns:\n    Retrieved information with structured reflection", 'parameters': {'properties': {'query': {'type': 'string'}, 'context': {'anyOf': [{'additionalProperties': True, 'type': 'object'}, {'type': 'null'}], 'default': None}}, 'required': ['query'], 'type': 'object'}}}, {'type': 'function', 'function': {'name': 'structured_reasoning', 'description': 'Perform step-by-step reasoning with structured reflection on the thinking process.\n\nArgs:\n    query: The question or problem requiring reasoning\n    context: Optional context from previous steps or retrieval\n\nReturns:\n    Step-by-step reasoning with structured reflection', 'parameters': {'properties': {'query': {'type': 'string'}, 'context': {'anyOf': [{'additionalProperties': True, 'type': 'object'}, {'type': 'null'}], 'default': None}}, 'required': ['query'], 'type': 'object'}}}]}}
+2025-04-23 01:15:45,775 - openai._base_client - DEBUG - Sending HTTP Request: POST https://api.openai.com/v1/chat/completions
+2025-04-23 01:15:45,776 - httpcore.connection - DEBUG - connect_tcp.started host='api.openai.com' port=443 local_address=None timeout=None socket_options=None
+2025-04-23 01:15:45,781 - httpcore.connection - DEBUG - connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x722177ae4ad0>
+2025-04-23 01:15:45,781 - httpcore.connection - DEBUG - start_tls.started ssl_context=<ssl.SSLContext object at 0x72219ecda750> server_hostname='api.openai.com' timeout=None
+2025-04-23 01:15:45,788 - httpcore.connection - DEBUG - start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x72219eb91f10>
+2025-04-23 01:15:45,789 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
+2025-04-23 01:15:45,789 - httpcore.http11 - DEBUG - send_request_headers.complete
+2025-04-23 01:15:45,789 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
+2025-04-23 01:15:45,790 - httpcore.http11 - DEBUG - send_request_body.complete
+2025-04-23 01:15:45,790 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
+2025-04-23 01:15:46,582 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Wed, 23 Apr 2025 01:15:46 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'access-control-expose-headers', b'X-Request-ID'), (b'openai-organization', b'pspedro19'), (b'openai-processing-ms', b'456'), (b'openai-version', b'2020-10-01'), (b'x-ratelimit-limit-requests', b'10000'), (b'x-ratelimit-limit-tokens', b'200000'), (b'x-ratelimit-remaining-requests', b'9999'), (b'x-ratelimit-remaining-tokens', b'199440'), (b'x-ratelimit-reset-requests', b'8.64s'), (b'x-ratelimit-reset-tokens', b'168ms'), (b'x-request-id', b'req_0c5a737cd318447e03efbec258ce21db'), (b'strict-transport-security', b'max-age=31536000; includeSubDomains; preload'), (b'cf-cache-status', b'DYNAMIC'), (b'Set-Cookie', b'__cf_bm=JmdHEhjk5yqcEnC2uJbQNzNvLHoBbRgFd5dpW4a1lhQ-1745370946-1.0.1.1-FwmtiuLSXFk1jd.o4rprmnmS1yvKqV9xyNk20ZlfkiihKbGr6vcaoeWH9l_Dez9rt0sdblKLyXHKKQVExU71OGk6PE8IQ2gy_7umTegQ8zE; path=/; expires=Wed, 23-Apr-25 01:45:46 GMT; domain=.api.openai.com; HttpOnly; Secure; SameSite=None'), (b'X-Content-Type-Options', b'nosniff'), (b'Set-Cookie', b'_cfuvid=mcR1e7VTQpknHox8tbKL7DhyzbND9fOjdUCIe0GTxpY-1745370946607-0.0.1.1-604800000; path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None'), (b'Server', b'cloudflare'), (b'CF-RAY', b'934982fb5ac98c90-EWR'), (b'Content-Encoding', b'gzip'), (b'alt-svc', b'h3=":443"; ma=86400')])
+2025-04-23 01:15:46,584 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-23 01:15:46,584 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
+2025-04-23 01:15:46,584 - httpcore.http11 - DEBUG - receive_response_body.complete
+2025-04-23 01:15:46,585 - httpcore.http11 - DEBUG - response_closed.started
+2025-04-23 01:15:46,585 - httpcore.http11 - DEBUG - response_closed.complete
+2025-04-23 01:15:46,585 - openai._base_client - DEBUG - HTTP Response: POST https://api.openai.com/v1/chat/completions "200 OK" Headers([('date', 'Wed, 23 Apr 2025 01:15:46 GMT'), ('content-type', 'application/json'), ('transfer-encoding', 'chunked'), ('connection', 'keep-alive'), ('access-control-expose-headers', 'X-Request-ID'), ('openai-organization', 'pspedro19'), ('openai-processing-ms', '456'), ('openai-version', '2020-10-01'), ('x-ratelimit-limit-requests', '10000'), ('x-ratelimit-limit-tokens', '200000'), ('x-ratelimit-remaining-requests', '9999'), ('x-ratelimit-remaining-tokens', '199440'), ('x-ratelimit-reset-requests', '8.64s'), ('x-ratelimit-reset-tokens', '168ms'), ('x-request-id', 'req_0c5a737cd318447e03efbec258ce21db'), ('strict-transport-security', 'max-age=31536000; includeSubDomains; preload'), ('cf-cache-status', 'DYNAMIC'), ('set-cookie', '__cf_bm=JmdHEhjk5yqcEnC2uJbQNzNvLHoBbRgFd5dpW4a1lhQ-1745370946-1.0.1.1-FwmtiuLSXFk1jd.o4rprmnmS1yvKqV9xyNk20ZlfkiihKbGr6vcaoeWH9l_Dez9rt0sdblKLyXHKKQVExU71OGk6PE8IQ2gy_7umTegQ8zE; path=/; expires=Wed, 23-Apr-25 01:45:46 GMT; domain=.api.openai.com; HttpOnly; Secure; SameSite=None'), ('x-content-type-options', 'nosniff'), ('set-cookie', '_cfuvid=mcR1e7VTQpknHox8tbKL7DhyzbND9fOjdUCIe0GTxpY-1745370946607-0.0.1.1-604800000; path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None'), ('server', 'cloudflare'), ('cf-ray', '934982fb5ac98c90-EWR'), ('content-encoding', 'gzip'), ('alt-svc', 'h3=":443"; ma=86400')])
+2025-04-23 01:15:46,585 - openai._base_client - DEBUG - request_id: req_0c5a737cd318447e03efbec258ce21db
+2025-04-23 01:15:46,597 - rag-agent-chat - DEBUG - Agent LLM response received
+2025-04-23 01:15:46,598 - rag-agent-chat - DEBUG - Routing decision for message type: <class 'langchain_core.messages.ai.AIMessage'>
+2025-04-23 01:15:46,598 - rag-agent-chat - DEBUG - No tool calls, ending processing cycle
+2025-04-23 01:15:51,513 - app.core.pipelines.search_pipeline - INFO - Search pipeline resources closed
+2025-04-23 01:15:51,513 - rag-agent-chat - INFO - Reflective RAG Chat resources closed
