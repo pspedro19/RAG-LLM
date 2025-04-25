@@ -50,12 +50,18 @@ sudo apt install -y python-is-python3
 ```
 
 ```bash
+cd RAG-LLM
+```
+
+```bash
 python -m venv venv
-
+```
 # En Windows
+```
 venv\Scripts\activate
-
+```
 # En Linux/Mac
+```
 source venv/bin/activate
 ```
 
