@@ -1,30 +1,33 @@
 # Base requirements
-python-dotenv
-fastapi
-uvicorn
-openai==0.28
-pydantic
-pandas
-requests
-aiosqlite
-aiohttp
+python-dotenv>=1.0.0
+fastapi>=0.95.0
+uvicorn>=0.21.0
+openai>=0.28.0
+pydantic>=1.10.0
+pandas>=2.0.0
+requests>=2.31.0
+aiosqlite>=0.18.0
+aiohttp>=3.8.4
 
 # Database
-psycopg2-binary
+psycopg2-binary>=2.9.5
 
 # NLP and ML
-spacy
-pycountry
+spacy>=3.5.0
+pycountry>=22.3.5
 python-Levenshtein==0.23.0
-transformers
-scikit-learn
-torch
-sentence-transformers
-langchain
+transformers>=4.27.0
+scikit-learn>=1.2.2
+torch>=2.0.0
+sentence-transformers>=2.2.2
+langchain>=0.0.267
+
+# Langgraph - esta es la dependencia crítica
+langgraph==0.2.74  # Especificamos una versión exacta para evitar problemas
 
 # Document processing
-PyMuPDF
-peft
+PyMuPDF>=1.21.1
+peft>=0.4.0
 
 # Storage
-minio
+minio>=7.1.0
