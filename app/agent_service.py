@@ -222,7 +222,7 @@ class AssistantState(TypedDict):
 # Implementación de límites y guardrails (MA-8)
 MAX_STEPS = 15
 MAX_TOKENS = 12000
-TIMEOUT_SECONDS = 45  # Aumentado a 45 segundos
+TIMEOUT_SECONDS = 150 # Aumentado a 150 segundos
 
 # Circuit Breaker base (elimina duplicación)
 class CircuitBreakerService:
