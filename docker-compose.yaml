@@ -162,7 +162,7 @@ services:
       - ./app:/app
       - ${PWD}/chat-Interface:/app/chat-Interface
       - ${PWD}/chat-Interface/property_images:/app/images
-    container_name: fastapi_server
+    container_name: fastapi
     depends_on:
       mlflow:
         condition: service_healthy
