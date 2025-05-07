@@ -10,7 +10,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'property_images')
 FILE_UPLOAD_PERMISSIONS = 0o644
 # API Configuration
 API_BASE_URL = os.environ.get('API_BASE_URL', 'http://fastapi:8000')
-API_TIMEOUT = int(os.environ.get('API_TIMEOUT', 30))
+API_TIMEOUT = int(os.environ.get('API_TIMEOUT', 300))
 
 STATIC_URL = '/static/'
 # STATIC_ROOT = BASE_DIR / 'staticfiles'

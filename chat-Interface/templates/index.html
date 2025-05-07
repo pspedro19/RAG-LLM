@@ -523,6 +523,7 @@
             for (let i = 0; i < maxRetries; i++) {
                 try {
                     const response = await fetchWithTimeout(url, options, timeoutMs);
+                    console.log(response);
                     if (response.ok) {
                         return response;
                     }
