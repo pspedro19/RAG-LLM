@@ -296,6 +296,18 @@
             transform: none;
         }
 
+        /* Error message styles */
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #dc3545;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            animation: fadeInUp 0.3s ease;
+        }
+
         /* Animaciones */
         @keyframes bounce {
             0%, 80%, 100% { transform: scale(0); }
@@ -480,7 +492,58 @@
             }
         };
 
-        // Manejador principal de mensajes
+        // Función para implementar timeout en fetch
+        async function fetchWithTimeout(url, options, timeoutMs = 90000) {
+            const controller = new AbortController();
+            const { signal } = controller;
+            
+            // Agregar la señal de abort al options
+            options = { ...options, signal };
+            
+            // Configurar el timeout
+            const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+            
+            try {
+                const response = await fetch(url, options);
+                clearTimeout(timeoutId);
+                return response;
+            } catch (error) {
+                clearTimeout(timeoutId);
+                if (error.name === 'AbortError') {
+                    throw new Error('Timeout');
+                }
+                throw error;
+            }
+        }
+
+        // Función mejorada para retry con timeout
+        async function retryFetch(url, options, maxRetries = 2, timeoutMs = 90000) {
+            let lastError;
+            
+            for (let i = 0; i < maxRetries; i++) {
+                try {
+                    const response = await fetchWithTimeout(url, options, timeoutMs);
+                    if (response.ok) {
+                        return response;
+                    }
+                    
+                    lastError = new Error(`Error del servidor: ${response.status}`);
+                } catch (error) {
+                    console.error(`Intento ${i+1} fallido:`, error);
+                    lastError = error;
+                    
+                    // Esperar antes del próximo intento
+                    if (i < maxRetries - 1) {
+                        const delay = 1000 * Math.pow(2, i); // Exponential backoff
+                        await utils.delay(delay);
+                    }
+                }
+            }
+            
+            throw lastError || new Error('Máximo número de reintentos alcanzado');
+        }
+
+        // Manejador principal de mensajes mejorado
         async function enviarMensaje() {
             const input = document.getElementById('mensajeInput');
             const mensaje = input.value.trim();
@@ -495,16 +558,16 @@
                 
                 // Mostrar indicador de escritura
                 UI.showTypingIndicator();
-
-                // Enviar mensaje al servidor
-                const response = await fetch('/api/', {
+                
+                // Enviar mensaje al servidor usando retryFetch con timeout de 90 segundos
+                const response = await retryFetch('/api/', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRFToken': utils.getCSRFToken()
                     },
                     body: JSON.stringify({ mensaje: mensaje })
-                });
+                }, 2, 90000); // 2 reintentos, 90 segundos máximo
 
                 // Remover indicador de escritura
                 UI.removeTypingIndicator();
@@ -526,7 +589,15 @@
 
             } catch (error) {
                 console.error('Error:', error);
-                UI.showError('Lo siento, hubo un error al procesar tu mensaje. Por favor, intenta nuevamente.');
+                UI.removeTypingIndicator();
+                
+                let errorMessage = 'Lo siento, hubo un error al procesar tu mensaje. Por favor, intenta nuevamente.';
+                
+                if (error.message.includes('Timeout')) {
+                    errorMessage = 'Lo siento, hubo un error al procesar tu mensaje. Por favor, intenta nuevamente.';
+                }
+                
+                UI.showError(errorMessage);
             } finally {
                 UI.disableInput(false);
             }
@@ -539,22 +610,6 @@
                 enviarMensaje();
             }
         });
-
-        // Función para retry automático en caso de error
-        async function retryFetch(url, options, maxRetries = 3) {
-            for (let i = 0; i < maxRetries; i++) {
-                try {
-                    const response = await fetch(url, options);
-                    if (response.ok) {
-                        return response;
-                    }
-                } catch (error) {
-                    if (i === maxRetries - 1) throw error;
-                    await utils.delay(1000 * Math.pow(2, i)); // Exponential backoff
-                }
-            }
-            throw new Error('Máximo número de reintentos alcanzado');
-        }
 
         // Procesamiento de respuestas
         function processResponse(text) {
