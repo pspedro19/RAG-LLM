@@ -1,221 +1,313 @@
-# RAG-LLM: Guía Completa
+#  Curacao Tourism Assistant — RAG-LLM Multi-Agent System
 
-## Estructura del Proyecto RAG-LLM
+![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.115%2B-009688?logo=fastapi&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
+![Airflow](https://img.shields.io/badge/Airflow-Orchestration-017CEE?logo=apacheairflow&logoColor=white)
+![MLflow](https://img.shields.io/badge/MLflow-Tracking-0194E2?logo=mlflow&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-4169E1?logo=postgresql&logoColor=white)
+![MinIO](https://img.shields.io/badge/MinIO-Object%20Store-C72E49?logo=minio&logoColor=white)
+![pgvector](https://img.shields.io/badge/pgvector-Semantic%20Search-2C3E50)
+![FAISS](https://img.shields.io/badge/FAISS-Vector%20Index-2E86C1)
+![Code Style](https://img.shields.io/badge/Code%20Style-Black-000000?logo=python&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-green)
 
-Basado en la estructura de archivos proporcionada, este proyecto está organizado como una plataforma robusta para el desarrollo de aplicaciones de IA centradas en RAG (Retrieval-Augmented Generation) y sistemas de agentes:
+> **Curacao Tourism Assistant** es un sistema de IA multi-agente que combina **RAG**, **NLP** y **visión por computadora** para ofrecer asistencia turística contextual y trazable sobre la isla de **Curazao**.
+
+---
+
+##  Tabla de Contenidos
+
+- [Descripción](#-descripción)
+- [Características](#-características)
+- [Arquitectura y Estructura](#-arquitectura-y-estructura)
+- [Instalación](#-instalación)
+- [Configuración (.env)](#-configuración-env)
+- [Uso Rápido](#-uso-rápido)
+- [Módulos Clave](#-módulos-clave)
+- [Observabilidad y Seguridad](#-observabilidad-y-seguridad)
+- [Despliegue a Producción](#-despliegue-a-producción)
+- [Runbook (Comandos Útiles)](#-runbook-comandos-útiles)
+- [Testing](#-testing)
+- [Solución de Problemas](#-solución-de-problemas)
+- [Contribución y Licencia](#-contribución-y-licencia)
+
+---
+
+##  Descripción
+
+- ** Objetivo:** Proveer respuestas confiables, actuales y explicables a turistas y operadores, con trazabilidad desde la fuente.
+- ** Enfoque:** Orquestación **multi-agente** (LangGraph), **RAG** con FAISS/pgvector, y **CV** para análisis de imágenes.
+- ** Operación:** API **FastAPI**, orquestación **Airflow**, seguimiento de experimentos **MLflow**, almacenamiento de objetos **MinIO**, **PostgreSQL** como store transaccional.
+
+---
+
+##  Características
+
+-  **Multi-Agente** (enrutamiento, debate, verificación de fuentes)
+-  **RAG Avanzado** (FAISS/pgvector, chunking, reranking opcional)
+-  **Visión por Computadora** (clasificación/identificación básica)
+-  **Resiliencia** (circuit-breaker, backoff, fallback entre LLMs)
+-  **Trazabilidad** (MLflow, checkpoints, logs estructurados)
+-  **API REST** con **FastAPI** (Swagger/Redoc)
+-  **Contenerización** completa (**Docker Compose**)
+-  **MLOps** (pipelines de ingestión/entrenamiento/monitoreo)
+
+---
+
+##  Arquitectura y Estructura
 
 ```
 RAG-LLM/
-├── app/                  # Directorio principal de la aplicación
-│   ├── core/             # Funcionalidades centrales
-│   ├── data/             # Datos de la aplicación
-│   │   ├── documents/pdf/
-│   │   │   ├── information/  # Documentos para TP1 y TP2
-│   │   │   └── tp3_agent/    # Documentos para TP3
-│   │   └── indices/      # Índices FAISS para búsqueda vectorial
-│   ├── embeddings/       # Servicios de embeddings
-│   ├── ingestion/        # Procesamiento y chunking de documentos
-│   ├── query/            # Procesamiento de consultas y recuperación
-│   ├── rag_chat_TP1.py   # Implementación de chatbot RAG (TP1)
-│   ├── langgraph_cv_agents_TP2.py # Sistema de agentes para CVs (TP2)
-│   ├── agent_tp3.py      # Sistema multi-agente con razonamiento (TP3)
-│   └── rag_setup.py      # Utilidad para configurar datos RAG
-├── airflow/              # Configuración y DAGs de Airflow para orquestación
-├── chat-Interface/       # Interfaz web basada en Django
-├── checkpoints/          # Archivos de checkpoints para los modelos
-├── docker-compose.yaml   # Configuración para despliegue con Docker
-└── requirements.txt      # Dependencias del proyecto
+├─ app/                         # App FastAPI + dominio
+│  ├─ core/
+│  │  ├─ config/                # Config global (pydantic)
+│  │  ├─ db/                    # Conexiones (Postgres/MinIO)
+│  │  ├─ pipelines/             # Jobs y flujos internos
+│  │  ├─ db_service.py
+│  │  ├─ faiss_manager.py
+│  │  └─ sync_service.py
+│  ├─ data/
+│  │  ├─ documents/             # PDFs/Docs turísticos
+│  │  └─ indices/               # Índices FAISS
+│  ├─ embeddings/
+│  │  ├─ embedding_service.py
+│  │  └─ embedding_repository.py
+│  ├─ ingestion/
+│  │  ├─ document_processor.py
+│  │  ├─ document_reader.py
+│  │  └─ chunk_repository.py
+│  ├─ query/
+│  │  ├─ query_processor.py
+│  │  ├─ retriever.py
+│  │  └─ context_builder.py
+│  ├─ vision/
+│  │  ├─ image_processor.py
+│  │  ├─ model_service.py
+│  │  └─ imagenet_classes.json
+│  ├─ notifications/
+│  │  ├─ email_service.py
+│  │  └─ webhook_service.py
+│  ├─ agent_service.py
+│  ├─ agent_tp3.py
+│  ├─ langgraph_cv_agents_TP2.py
+│  ├─ rag_chat_TP1.py
+│  ├─ rag_setup.py
+│  ├─ main.py                   # FastAPI entrypoint
+│  └─ checkpoints/
+├─ airflow/
+│  ├─ dags/
+│  │  ├─ DAG_finetuning.py
+│  │  ├─ DAG_finetuning_Qlora.py
+│  │  └─ DAG_finetuning_RP.py
+│  ├─ secrets/
+│  │  ├─ connections.yaml
+│  │  └─ variables.yaml
+│  └─ requirements.txt
+├─ chat-Interface/              # Interfaz Django (opcional)
+│  ├─ chat/ (models, views, utils)
+│  ├─ chatbot/ (settings, urls)
+│  ├─ property_images/
+│  └─ templates/
+├─ mlflow/ (Dockerfile, requirements.txt)
+├─ frontend/ (index.html, app.js, styles.css)
+├─ postgres/ (Dockerfile)
+├─ minio/ (Dockerfile)
+├─ checkpoints/
+├─ docker-compose.yaml
+└─ requirements.txt
 ```
 
-## Guía de Instalación y Configuración
+**Diagrama (alto nivel):**
+```
+Usuarios ⇄ FastAPI (app/main.py)
+           │
+           ├─ Multi-Agente (agent_service.py / agent_tp3.py)
+           │    ├─ RAG (retriever.py + FAISS/pgvector)
+           │    └─ Visión (vision/model_service.py)
+           │
+           ├─ Postgres (metadatos) ─── MinIO (objetos)
+           ├─ Airflow (DAGs MLOps)
+           └─ MLflow (experimentos / métricas)
+```
 
-### 1. Clonar el repositorio
+---
+
+##  Instalación
 
 ```bash
-git clone [https://github.com/tu-usuario/RAG-LLM.git](https://github.com/pspedro19/RAG-LLM.git)
+# 1) Clonar
+git clone https://github.com/pspedro19/RAG-LLM.git
 cd RAG-LLM
-```
 
-### 2. Crear y activar entorno virtual
-```bash
-sudo apt update
-```
-
-```bash
-sudo apt install -y python3 python3-venv python3-pip
-```
-
-```
-sudo apt install -y python-is-python3
-```
-
-```bash
-cd RAG-LLM
-```
-
-```bash
+# 2) Entorno virtual
 python -m venv venv
-```
-# En Windows
-```
-venv\Scripts\activate
-```
-# En Linux/Mac
-```
+# Linux/Mac
 source venv/bin/activate
-```
+# Windows
+# venv\Scripts\activate
 
-### 3. Instalar dependencias
-
-```bash
+# 3) Dependencias
 pip install -r requirements.txt
+# (si aplican reqs adicionales en app/)
+pip install -r app/requirements.txt
 ```
 
-### 4. Configurar variables de entorno
+---
 
-Crear un archivo `.env` a partir del archivo ejemplo:
+##  Configuración (.env)
+
+Crea tu `.env` desde el ejemplo y edítalo:
 
 ```bash
-cp example.env .env
-nano .env  # Editar con tus claves API
+cp .env.example .env
 ```
 
-Asegúrate de configurar las siguientes variables:
+```env
+# LLM Providers
+OPENAI_API_KEY=sk-...
+ANTHROPIC_API_KEY=...
+TAVILY_API_KEY=...
 
-```
-TAVILY_API_KEY=
-OPENAI_API_KEY=
-ANTHROPIC_API_KEY=
-```
+# DB / Storage
+POSTGRES_URL=postgresql://user:pass@localhost:5432/curacao_rag
 
-### 5. Preparar documentos
+# Security
+JWT_SECRET_KEY=_min_32_chars_secret_key
+ENCRYPTION_KEY=_32_bytes_base64_key
 
-Asegúrate de que los documentos estén en los directorios correctos:
-
-```
-app/data/documents/pdf/information/  # Para TP1 y TP2
-app/data/documents/pdf/tp3_agent/    # Para TP3
-```
-
-
-### 6. Montar Microservicio
-
-Asegúrate de que los documentos estén en los directorios correctos:
-
-```
-apt install docker-compose
+# Observability
+MLFLOW_TRACKING_URI=http://localhost:5000
 ```
 
-```
-docker-compose build
-```
+> **Tip:** Asegúrate de que `JWT_SECRET_KEY` y `ENCRYPTION_KEY` sean **largos y seguros**. En producción, usa un **secret manager**.
 
-```
-docker-compose up -d
-```
+---
 
-## Implementación de los Trabajos Prácticos
+##  Uso Rápido
 
-### TP1: Chatbot RAG
-
-**Consigna**: Implementar un sistema de generación de texto (chatbot) que utilice la técnica de Retrieval-Augmented Generation (RAG). El chatbot recuperará información de una base de datos (documentos) y la usará para generar respuestas completas.
-
-#### Preparación de datos para TP1
+### Opción A) Docker Compose (Full Stack)
 
 ```bash
-# Limpiar datos existentes (si es necesario)
-python -m app.rag_setup clean
+# Levantar todo
+docker-compose up -d --build
 
-# Ingestar documentos para el sistema RAG
-python -m app.rag_setup ingest --doc-dir app/data/documents/pdf/information
+# Ver estado
+docker-compose ps
 
-# Sincronizar datos
-python -m app.rag_setup sync
-
-# Reconstruir índice
-python -m app.rag_setup rebuild
+# Logs de la app
+docker-compose logs -f app
 ```
 
-#### Ejecución del chatbot RAG (TP1)
+- FastAPI Docs: `http://localhost:8000/docs` (Swagger) • `http://localhost:8000/redoc`
+- MLflow UI: `http://localhost:5000`
+- Airflow UI: `http://localhost:8080`
+
+### Opción B) Local (solo API)
 
 ```bash
-# Iniciar la aplicación RAG
-python -m app.rag_chat_TP1 --model openai --top-k 16
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-#### Funcionalidades demostradas en TP1
-* Carga y procesamiento de documentos PDF
-* Generación de embeddings para búsqueda semántica
-* Consultas sobre la información contenida en los documentos
-* Respuestas generadas aumentadas con información recuperada
+---
 
-### TP2: Sistema de Agentes para CVs
+##  Módulos Clave
 
-**Consigna**: Implementar un sistema de agentes que responda eficientemente dependiendo de qué persona se está preguntando (1 agente por persona). Por defecto, cuando no se nombra a nadie, utilizar el agente del alumno.
-
-#### Preparación de datos para TP2
-
+###  Multi-Agente (TP3)
 ```bash
-# Utiliza los mismos datos preparados para TP1
-# O si necesitas recargar:
-
-# Limpiar datos existentes (si es necesario)
-python -m app.rag_setup clean
-
-# Ingestar documentos para el sistema de agentes
-python -m app.rag_setup ingest --doc-dir app/data/documents/pdf/information
-
-# Sincronizar datos
-python -m app.rag_setup sync
-
-# Reconstruir índice
-python -m app.rag_setup rebuild
-```
-
-#### Ejecución del sistema de agentes (TP2)
-
-```bash
-# Iniciar la aplicación con langgraph para el manejo de agentes
-python -m app.langgraph_cv_agents_TP2
-```
-
-#### Funcionalidades demostradas en TP2
-* Sistema multi-agente con un agente específico para cada miembro del equipo
-* Identificación automática del agente correcto basado en consultas
-* Respuestas contextualizadas según el CV consultado
-* Manejo de consultas que involucran múltiples CVs
-* Comportamiento por defecto cuando no se especifica persona
-
-### TP3: LLM con Razonamiento Multi-Agente
-
-**Consigna**: Implementar una aplicación que funcione como un LLM con razonamiento, que reciba una pregunta compleja y utilice diferentes agentes para resolver parcialmente y luego compaginar todas las respuestas para ofrecer la solución.
-
-#### Preparación de datos para TP3
-
-```bash
-# Limpiar datos existentes (si es necesario)
-python -m app.rag_setup clean
-
-# Ingestar documentos para agentes especializados
-python -m app.rag_setup ingest --doc-dir app/data/documents/pdf/tp3_agent
-
-# Sincronizar datos
-python -m app.rag_setup sync
-
-# Reconstruir índice
-python -m app.rag_setup rebuild
-```
-
-#### Ejecución del sistema de razonamiento (TP3)
-
-```bash
-# Iniciar la aplicación multi-agente con razonamiento
 python -m app.agent_tp3
+# o vía API
+curl -sX POST "http://localhost:8000/agent/query"   -H "Content-Type: application/json"   -d '{"message":"Itinerario 3 días en Curazao (playas + historia)","language":"es"}'
 ```
 
-#### Funcionalidades demostradas en TP3
-* Procesamiento de preguntas complejas
-* Descomposición en sub-problemas asignados a agentes especializados
-* Razonamiento intermedio y resolución parcial por agentes
-* Compaginación de respuestas parciales en una solución completa
-* Contabilización y visualización de tokens (entrada, salida, razonamiento)
+### 🔍 RAG Básico (TP1)
+```bash
+# Preparar datos
+python -m app.rag_setup clean
+python -m app.rag_setup ingest --doc-dir app/data/documents/
+python -m app.rag_setup sync
+python -m app.rag_setup rebuild
+
+# Chat RAG
+python -m app.rag_chat_TP1 --model openai --top-k 10
+```
+
+### 👥 Agentes para CVs (TP2)
+```bash
+python -m app.langgraph_cv_agents_TP2
+curl -sX POST "http://localhost:8000/agents/cv"   -H "Content-Type: application/json"   -d '{"question":"¿Experiencia en IA de Pedro?","person":"pedro"}'
+```
+
+---
+
+##  Observabilidad y Seguridad
+
+- **Resiliencia:** circuit-breaker, reintentos con backoff, cache de embeddings, fallback entre OpenAI/Anthropic/local.
+- **Seguridad:** JWT en endpoints, cifrado AES-256 para secretos en repos, sanitización de prompts.
+- **Métricas/Logs:** MLflow (experimentos, artefactos), logs estructurados (`app/curacao_assistant.log`), health checks.
+
+**Salud de la app:**
+```bash
+curl http://localhost:8000/health/metrics
+python -m app.health_checker
+```
+
+---
+
+##  Despliegue a Producción
+
+Variables recomendadas:
+
+```env
+ENVIRONMENT=production
+LOG_LEVEL=INFO
+POSTGRES_URL=postgresql://user:pass@postgres:5432/curacao_rag_prod
+JWT_SECRET_KEY=_super_long_secure_key
+ENCRYPTION_KEY_32_bytes_prod_key
+MLFLOW_TRACKING_URI=http://mlflow:5000
+AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql://airflow:airflow@postgres:5432/airflow_prod
+```
+
+Comandos:
+
+```bash
+# Despliegue (compose + .env.prod)
+docker-compose -f docker-compose.yaml --env-file .env.prod up -d
+
+# Backup Postgres
+docker-compose exec postgres pg_dump -U user curacao_rag > backup_$(date +%F).sql
+
+# Logs en vivo
+docker-compose logs -f --tail=100 app
+```
+
+---
+
+##  Runbook (Comandos Útiles)
+
+```bash
+# Ingesta RAG
+python -m app.rag_setup ingest --doc-dir app/data/documents/
+
+# Reconstruir índice
+python -m app.rag_setup rebuild
+
+# Re-sincronizar metadatos
+python -m app.rag_setup sync
+
+# Regenerar embeddings (selectivo)
+python -m app.embeddings.embedding_service --refresh --only-updated
+```
+
+---
+
+##  Testing
+
+```bash
+pytest app/test/ -v
+pytest app/test/test_embeddings.py -v
+pytest app/test/test_integration_local.py -v
+pytest app/test/test_e2e.py -v
+pytest app/test/test_search.py -v   # rendimiento
+```
+
