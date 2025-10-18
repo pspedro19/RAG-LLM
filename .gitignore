@@ -2,6 +2,7 @@
 # 🔐  Secret environment files
 #     ‒ Ignore every real .env but keep the template example.env
 # ───────────────────────────────────────────────────────────────
+nul
 .env
 **/.env
 .env.*

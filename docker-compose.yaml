@@ -163,9 +163,9 @@ services:
       - ${PWD}/chat-Interface:/app/chat-Interface
       - ${PWD}/chat-Interface/property_images:/app/images
     container_name: fastapi
-    depends_on:
-      mlflow:
-        condition: service_healthy
+    # depends_on:
+    #   mlflow:
+    #     condition: service_healthy
     ports:
       - "8000:8000"
     networks:
@@ -187,6 +187,7 @@ services:
       - DB_PATH=/app/chat-Interface/db.sqlite3
     command: >
       bash -c "
+        pip install python-multipart &&
         ln -sf /app /app/app &&
         uvicorn main:app --host 0.0.0.0 --port 8000 --reload
       "

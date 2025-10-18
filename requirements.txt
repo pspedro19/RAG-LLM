@@ -50,3 +50,29 @@ argostranslate
 openai>=1.0.0
 anthropic>=0.7.0
 tiktoken
+
+# ========================================
+# NUEVAS DEPENDENCIAS PROYECTO FINAL
+# ========================================
+
+# Visión (CNN/ViT) - FASE 1.1
+torchvision>=0.15.0
+pillow>=9.0.0
+
+# Notificaciones - FASE 1.2
+sendgrid>=6.10.0
+# aiohttp ya está incluido arriba
+
+# Seguridad - FASE 2
+slowapi>=0.1.9
+
+# Cache - FASE 3
+redis>=4.5.0
+
+# Métricas y evaluación adicionales - FASE 1.3
+# scikit-learn ya está incluido arriba
+nltk>=3.8.0
+rouge-score>=0.1.2
+
+# Re-ranking - FASE 4
+# sentence-transformers ya está incluido arriba

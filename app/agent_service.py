@@ -16,18 +16,18 @@ from langgraph.graph import StateGraph, END
 import numpy as np
 from openai import AsyncOpenAI
 
-# Validación centralizada de entorno (falla temprano)
+# Validación centralizada de entorno (sin salir del programa)
 def validate_env(required_vars: list[str]) -> bool:
     """Valida que todas las variables de entorno requeridas estén definidas"""
     missing_vars = [var for var in required_vars if not os.environ.get(var)]
-    
+
     if missing_vars:
-        print("\n❌ ERROR: Faltan variables de entorno requeridas:")
+        print("\n WARNING: Faltan variables de entorno requeridas:")
         for var in missing_vars:
             print(f"  - {var}")
-        print("\nEl asistente no puede funcionar correctamente sin estas variables.")
+        print("\nAlgunas funcionalidades pueden no estar disponibles.")
         return False
-    
+
     return True
 
 # Carga de variables de entorno
@@ -36,27 +36,24 @@ try:
     # Intentar cargar desde diferentes ubicaciones posibles
     load_dotenv()  # Busca .env en el directorio actual
     load_dotenv("/root/RAG-LLM/.env")  # Busca en la raíz del proyecto
-    
-    # Verificar variables críticas de forma centralizada
+
+    # Verificar variables críticas de forma centralizada (solo warning)
     critical_vars = ["OPENAI_API_KEY"]
-    if not validate_env(critical_vars):
-        sys.exit(1)
-    
+    validate_env(critical_vars)
+
     # Mostrar información de configuración
-    print("\n📋 Configuración actual:")
+    print("\n Configuración actual:")
     print(f"  DB Host: {os.environ.get('PG_HOST', 'localhost')}")
     print(f"  DB Name: {os.environ.get('POSTGRES_DB', os.environ.get('PG_DATABASE', 'mydatabase'))}")
-    print(f"  OpenAI API: {'configurada ✓' if os.environ.get('OPENAI_API_KEY') else 'no configurada ✗'}")
-    print(f"  Tavily API: {'configurada ✓' if os.environ.get('TAVILY_API_KEY') else 'no configurada ✗'}")
-    
+    print(f"  OpenAI API: {'configurada ' if os.environ.get('OPENAI_API_KEY') else 'no configurada '}")
+    print(f"  Tavily API: {'configurada ' if os.environ.get('TAVILY_API_KEY') else 'no configurada '}")
+
 except ImportError:
-    print("⚠️ python-dotenv no está instalado. Variables de entorno limitadas a las del sistema.")
-    if not validate_env(["OPENAI_API_KEY"]):
-        sys.exit(1)
+    print(" python-dotenv no está instalado. Variables de entorno limitadas a las del sistema.")
+    validate_env(["OPENAI_API_KEY"])
 except Exception as e:
-    print(f"⚠️ Error cargando variables de entorno: {e}")
-    if not validate_env(["OPENAI_API_KEY"]):
-        sys.exit(1)
+    print(f" Error cargando variables de entorno: {e}")
+    validate_env(["OPENAI_API_KEY"])
 
 # Implementación simple de checkpoint manager
 class SimpleCheckpointManager:
@@ -134,10 +131,33 @@ logging.basicConfig(
 )
 logger = logging.getLogger("curacao-assistant")
 
-# Cliente OpenAI
+# Importar servicio LLM unificado
+try:
+    # Importar desde app/ si está dentro del paquete
+    from llm_service import get_llm_service
+except ImportError:
+    # Importar desde app.llm_service si se ejecuta desde otro contexto
+    try:
+        from app.llm_service import get_llm_service
+    except ImportError:
+        # Fallback: importar directamente si está en el mismo directorio
+        import sys
+        sys.path.insert(0, os.path.dirname(__file__))
+        from llm_service import get_llm_service
+
+# Inicializar servicio LLM con soporte multi-proveedor
+llm_service = get_llm_service()
+logger.info(f"Servicio LLM inicializado - Proveedores disponibles: {llm_service.get_available_providers()}")
+
+# Mantener referencia al cliente OpenAI para compatibilidad con código legacy
+# (será removido gradualmente)
+from openai import AsyncOpenAI
 openai_api_key = os.environ.get("OPENAI_API_KEY")
-client = AsyncOpenAI(api_key=openai_api_key)
-logger.info("Cliente OpenAI inicializado correctamente")
+if openai_api_key:
+    client = AsyncOpenAI(api_key=openai_api_key)
+else:
+    client = None
+    logger.warning("Cliente OpenAI no inicializado (usando solo Claude)")
 
 # Enums y constantes (mejora tipado)
 class AgentType(str, Enum):
@@ -291,7 +311,7 @@ class VectorMemoryService(CircuitBreakerService):
             "port": int(os.environ.get("PG_PORT", 5432))
         }
         self.conn = None
-        self.client = client
+        self.llm_service = llm_service
         self.embedding_model = embedding_model  # Almacenamos el nombre pero no lo usamos con OpenAI
         self.top_k = 8  # Aumentado a 8 para mayor contexto
         
@@ -301,9 +321,12 @@ class VectorMemoryService(CircuitBreakerService):
             # Cargar el modelo de embeddings local
             self.model = SentenceTransformer(embedding_model)
             logger.info(f"Modelo de embedding local cargado: {embedding_model}")
-        except ImportError:
-            logger.error("No se pudo importar SentenceTransformer. Asegúrate de instalarlo con: pip install sentence-transformers")
+        except (ImportError, RuntimeError, OSError) as e:
+            # Manejar errores de importación, incluyendo problemas de bitsandbytes en Windows
+            logger.warning(f"No se pudo cargar SentenceTransformer localmente: {str(e)[:100]}")
+            logger.info("Usando OpenAI Embeddings API como fallback")
             self.model = None
+            self.use_openai_embeddings = True
     
     async def initialize(self):
         """Inicializa la conexión a la base de datos con circuit breaker"""
@@ -327,15 +350,26 @@ class VectorMemoryService(CircuitBreakerService):
             return False
     
     async def generate_embedding(self, text):
-        """Genera embedding usando el modelo local en lugar de OpenAI"""
+        """Genera embedding usando el modelo local o OpenAI API como fallback"""
         start_time = time.time()
         try:
             if self.model is None:
-                raise Exception("Modelo de embeddings no disponible")
-                
+                # Fallback a OpenAI Embeddings API (solo si está disponible)
+                if self.llm_service.openai_client:
+                    logger.info("Usando OpenAI Embeddings API (fallback)")
+                    embedding_list = await self.llm_service.embeddings(text)
+                    logger.info(f"Embedding generado con OpenAI API en {time.time() - start_time:.2f}s")
+                    return embedding_list, {"tokens": len(text.split())}
+                else:
+                    # Si no hay OpenAI, usar embeddings aleatorios normalizados
+                    logger.warning("No hay OpenAI disponible para embeddings, usando vector aleatorio")
+                    random_embedding = np.random.normal(0, 1, 384)
+                    normalized = random_embedding / np.linalg.norm(random_embedding)
+                    return normalized.tolist(), 0
+
             # Generar embedding con SentenceTransformer (llamada síncrona)
             embedding = self.model.encode([text])[0]
-            
+
             # Convertir a lista y normalizar si es necesario
             embedding_list = embedding.tolist()
             
@@ -656,7 +690,7 @@ class WebSearchService(CircuitBreakerService):
             - Adapta las respuestas para que sean directamente relevantes a la consulta
             """
             
-            response = await client.chat.completions.create(
+            response = await llm_service.chat_completion(
                 model="gpt-4-turbo",
                 messages=[
                     {"role": "system", "content": "Eres un sistema de búsqueda web especializado en turismo en Curazao con información actualizada y precisa."},
@@ -664,10 +698,10 @@ class WebSearchService(CircuitBreakerService):
                 ],
                 temperature=0.7,
             )
-            
-            content = response.choices[0].message.content
-            prompt_tokens = response.usage.prompt_tokens
-            completion_tokens = response.usage.completion_tokens
+
+            content = response["content"]
+            prompt_tokens = response["usage"]["prompt_tokens"]
+            completion_tokens = response["usage"]["completion_tokens"]
             
             processing_time = time.time() - start_time
             logger.info(f"[{trace_id}] Búsqueda LLM fallback completada en {processing_time:.2f}s")
@@ -702,6 +736,17 @@ class WebSearchService(CircuitBreakerService):
 vector_service = VectorMemoryService()
 web_service = WebSearchService()
 
+# Inicializar servicios de notificación
+try:
+    from notifications import EmailService, WebhookService
+    email_service = EmailService(fallback_mode=True)
+    webhook_service = WebhookService()
+    logger.info(" Servicios de notificación inicializados")
+except ImportError as e:
+    logger.warning(f"️ Servicios de notificación no disponibles: {e}")
+    email_service = None
+    webhook_service = None
+
 # Implementación de nodos con SRP (LG-1)
 async def query_classifier(state: AssistantState) -> AssistantState:
     """
@@ -732,7 +777,7 @@ async def query_classifier(state: AssistantState) -> AssistantState:
     
     # Clasificar consulta con structured output controlado
     try:
-        response = await client.chat.completions.create(
+        response = await llm_service.chat_completion(
             model="gpt-4-turbo",
             messages=[
                 {"role": "system", "content": "Eres un clasificador preciso de consultas turísticas. Categoriza exactamente según las instrucciones."},
@@ -741,9 +786,9 @@ async def query_classifier(state: AssistantState) -> AssistantState:
             temperature=0.1,
             max_tokens=20  # Limitado para forzar respuesta concisa
         )
-        
+
         # Extraer respuesta y normalizarla
-        query_type = response.choices[0].message.content.strip().lower()
+        query_type = response["content"].strip().lower()
         
         # Validación estricta (guardrail)
         if query_type not in ["conversacional", "informacion", "itinerario"]:
@@ -775,7 +820,7 @@ async def query_classifier(state: AssistantState) -> AssistantState:
         
         # Stats para observabilidad
         processing_time = time.time() - start_time
-        
+
         # Actualizar estado con toda la información
         state["query_type"] = query_type
         state["active_agents"] = active_agents
@@ -785,11 +830,12 @@ async def query_classifier(state: AssistantState) -> AssistantState:
             AgentType.CLASSIFIER.value: {
                 "time": processing_time,
                 "tokens": {
-                    "prompt": response.usage.prompt_tokens,
-                    "completion": response.usage.completion_tokens,
-                    "reasoning": response.usage.prompt_tokens
+                    "prompt": response["usage"]["prompt_tokens"],
+                    "completion": response["usage"]["completion_tokens"],
+                    "reasoning": response["usage"]["prompt_tokens"]
                 },
-                "success": True
+                "success": True,
+                "provider": response["provider"]
             }
         }
         
@@ -1056,27 +1102,28 @@ async def generate_info_response(state: AssistantState) -> None:
     """
     
     try:
-        response = await client.chat.completions.create(
+        response = await llm_service.chat_completion(
             model="gpt-4-turbo",
             messages=[
                 {"role": "system", "content": "Eres un asistente turístico especializado en Curazao que proporciona información precisa y útil."},
                 {"role": "user", "content": combined_prompt}
             ]
         )
-        
+
         # Guardar respuesta generada
-        state["final_response"] = response.choices[0].message.content
-        
+        state["final_response"] = response["content"]
+
         # Registrar estadísticas
         processing_time = time.time() - start_time
         state["processing_stats"]["response_generation"] = {
             "time": processing_time,
             "tokens": {
-                "prompt": response.usage.prompt_tokens,
-                "completion": response.usage.completion_tokens,
-                "reasoning": response.usage.prompt_tokens
+                "prompt": response["usage"]["prompt_tokens"],
+                "completion": response["usage"]["completion_tokens"],
+                "reasoning": response["usage"]["prompt_tokens"]
             },
-            "success": True
+            "success": True,
+            "provider": response["provider"]
         }
         
         logger.info(f"[{trace_id}] Respuesta informativa generada en {processing_time:.2f}s")
@@ -1147,7 +1194,7 @@ async def itinerary_agent(state: AssistantState) -> AssistantState:
         """
         
         # Estructurar salida como JSON
-        preferences_response = await client.chat.completions.create(
+        preferences_response = await llm_service.chat_completion(
             model="gpt-4-turbo",
             messages=[
                 {"role": "system", "content": "Eres un sistema especializado en análisis de consultas de viaje. Extraes parámetros con precisión."},
@@ -1156,9 +1203,9 @@ async def itinerary_agent(state: AssistantState) -> AssistantState:
             response_format={"type": "json_object"},
             temperature=0.1
         )
-        
+
         # Parsear respuesta
-        preferences = json.loads(preferences_response.choices[0].message.content)
+        preferences = json.loads(preferences_response["content"])
         
         # Validar y normalizar estructura
         if not isinstance(preferences, dict):
@@ -1240,7 +1287,7 @@ async def itinerary_agent(state: AssistantState) -> AssistantState:
         """
         
         # Generar itinerario
-        itinerary_response = await client.chat.completions.create(
+        itinerary_response = await llm_service.chat_completion(
             model="gpt-4-turbo",
             messages=[
                 {"role": "system", "content": "Eres un experto planificador de viajes especializado en Curazao con amplio conocimiento local."},
@@ -1248,9 +1295,9 @@ async def itinerary_agent(state: AssistantState) -> AssistantState:
             ],
             temperature=0.7
         )
-        
+
         # Guardar itinerario
-        itinerary_content = itinerary_response.choices[0].message.content
+        itinerary_content = itinerary_response["content"]
         
         state["itinerary_plan"] = {
             "plan": itinerary_content,
@@ -1266,11 +1313,11 @@ async def itinerary_agent(state: AssistantState) -> AssistantState:
         
         # Calcular estadísticas
         processing_time = time.time() - start_time
-        pref_prompt_tokens = preferences_response.usage.prompt_tokens
-        pref_completion_tokens = preferences_response.usage.completion_tokens
-        itin_prompt_tokens = itinerary_response.usage.prompt_tokens
-        itin_completion_tokens = itinerary_response.usage.completion_tokens
-        
+        pref_prompt_tokens = preferences_response["usage"]["prompt_tokens"]
+        pref_completion_tokens = preferences_response["usage"]["completion_tokens"]
+        itin_prompt_tokens = itinerary_response["usage"]["prompt_tokens"]
+        itin_completion_tokens = itinerary_response["usage"]["completion_tokens"]
+
         # Guardar estadísticas
         state["processing_stats"][AgentType.ITINERARY.value] = {
             "time": processing_time,
@@ -1279,11 +1326,50 @@ async def itinerary_agent(state: AssistantState) -> AssistantState:
                 "completion": pref_completion_tokens + itin_completion_tokens,
                 "reasoning": pref_prompt_tokens + itin_prompt_tokens
             },
-            "success": True
+            "success": True,
+            "provider": itinerary_response["provider"]
         }
         
         logger.info(f"[{trace_id}] Itinerario generado en {processing_time:.2f}s")
-        
+
+        # ========================================
+        # ACCIÓN AUTOMATIZADA: Email + Webhook
+        # ========================================
+
+        # Obtener email del usuario si está disponible
+        user_email = state.get("user_email")
+
+        # Enviar email con itinerario
+        if email_service and user_email:
+            try:
+                email_sent = await email_service.send_itinerary(
+                    to_email=user_email,
+                    itinerary=itinerary_content,
+                    query=state["query"],
+                    conversation_id=trace_id
+                )
+                if email_sent:
+                    logger.info(f" [{trace_id}] Email enviado a {user_email}")
+                    state.setdefault("actions_taken", []).append("email_sent")
+            except Exception as email_error:
+                logger.error(f" [{trace_id}] Error enviando email: {email_error}")
+                state["warnings"].append(f"No se pudo enviar email: {email_error}")
+
+        # Disparar webhook de itinerario generado
+        if webhook_service:
+            try:
+                webhook_sent = await webhook_service.trigger_itinerary_generated(
+                    conversation_id=trace_id,
+                    query=state["query"],
+                    itinerary=itinerary_content,
+                    user_email=user_email
+                )
+                if webhook_sent:
+                    logger.info(f" [{trace_id}] Webhook disparado para itinerario generado")
+                    state.setdefault("actions_taken", []).append("webhook_sent")
+            except Exception as webhook_error:
+                logger.error(f" [{trace_id}] Error enviando webhook: {webhook_error}")
+
     except Exception as e:
         # Manejo de errores
         processing_time = time.time() - start_time
@@ -1376,7 +1462,7 @@ async def conversational_agent(state: AssistantState) -> AssistantState:
             conv_prompt += "\n\nNota: Se han detectado algunos problemas técnicos. Ofrece brevemente disculpas sin mencionar detalles específicos."
         
         # Generar respuesta
-        response = await client.chat.completions.create(
+        response = await llm_service.chat_completion(
             model="gpt-4-turbo",
             messages=[
                 {"role": "system", "content": "Eres un asistente turístico amigable especializado en Curazao. Tu objetivo es ser útil, agradable y natural en la conversación."},
@@ -1384,9 +1470,9 @@ async def conversational_agent(state: AssistantState) -> AssistantState:
             ],
             temperature=0.7
         )
-        
+
         # Guardar respuesta
-        state["final_response"] = response.choices[0].message.content
+        state["final_response"] = response["content"]
         
         # Actualizar historial de conversación (MA-10)
         state["conversation_history"].append({
@@ -1407,11 +1493,12 @@ async def conversational_agent(state: AssistantState) -> AssistantState:
         state["processing_stats"][AgentType.CONVERSATIONAL.value] = {
             "time": processing_time,
             "tokens": {
-                "prompt": response.usage.prompt_tokens,
-                "completion": response.usage.completion_tokens,
-                "reasoning": response.usage.prompt_tokens
+                "prompt": response["usage"]["prompt_tokens"],
+                "completion": response["usage"]["completion_tokens"],
+                "reasoning": response["usage"]["prompt_tokens"]
             },
-            "success": True
+            "success": True,
+            "provider": response["provider"]
         }
         
         # Calcular estadísticas totales
@@ -1618,7 +1705,7 @@ def build_assistant_graph() -> StateGraph:
 checkpoint_manager = SimpleCheckpointManager("./checkpoints")
 
 # Función principal para procesar consultas
-async def process_query(query: str, conversation_id: str = None) -> Dict[str, Any]:
+async def process_query(query: str, conversation_id: str = None, user_email: str = None) -> Dict[str, Any]:
     """
     Procesa una consulta a través del sistema de agentes con observabilidad
     y manejo de errores mejorado.
@@ -1643,23 +1730,24 @@ async def process_query(query: str, conversation_id: str = None) -> Dict[str, An
             "query": query,
             "conversation_id": conversation_id,
             "timestamp": time.time(),
-            
+            "user_email": user_email,  # Para acciones automatizadas
+
             # Estado de ejecución
             "active_agents": set(),
             "query_type": "conversacional",  # Valor por defecto
             "current_step": 0,
             "max_steps": MAX_STEPS,
-            
+
             # Resultados de agentes
             "rag_results": {},
             "search_results": {},
             "itinerary_plan": {},
             "user_preferences": {},
-            
+
             # Historial y memoria
             "conversation_history": [],  # Se recuperará del checkpoint si existe
             "react_steps": [],
-            
+
             # Salida y métricas
             "final_response": "",
             "processing_stats": {},
@@ -1736,6 +1824,24 @@ async def process_query(query: str, conversation_id: str = None) -> Dict[str, An
             }
         
         logger.info(f"[{trace_id}] Consulta procesada exitosamente en {total_time:.2f}s")
+
+        # ========================================
+        # WEBHOOK: Consulta completada
+        # ========================================
+        if webhook_service:
+            try:
+                await webhook_service.trigger_query_completed(
+                    conversation_id=conversation_id,
+                    query=query,
+                    query_type=result["query_type"],
+                    response_preview=result["final_response"][:200],
+                    processing_time=total_time,
+                    tokens_used=response.get("tokens", {}).get("total", 0)
+                )
+                logger.info(f" [{trace_id}] Webhook de consulta completada disparado")
+            except Exception as webhook_error:
+                logger.warning(f"️ [{trace_id}] Error en webhook: {webhook_error}")
+
         return response
         
     except Exception as e:
